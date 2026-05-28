@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Gastos</title>
+
+  <style>
+
+    /* RESET GERAL */
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial;
+    }
+
+    /* FUNDO DO SITE */
+    body{
+      background:#020617;
+      color:white;
+      display:flex;
+    }
+
+    /* MENU LATERAL */
+    .menu{
+      width:240px;
+      min-height:100vh;
+      background:#0f172a;
+      padding:25px;
+      position:fixed;
+    }
+
+    /* LOGO */
+    .logo{
+      margin-bottom:40px;
+    }
+
+    /* TEXTO DA LOGO */
+    .logo p{
+      color:#94a3b8;
+      margin-top:5px;
+    }
+
+    /* MENU */
+    .menu nav{
+      display:flex;
+      flex-direction:column;
+      gap:15px;
+    }
+
+    /* LINKS MENU */
+    .menu nav a{
+      color:#94a3b8;
+      text-decoration:none;
+      padding:12px;
+      border-radius:10px;
+    }
+
+    /* HOVER MENU */
+    .menu nav a:hover,
+    .menu nav .active{
+      background:#1e293b;
+      color:white;
+    }
+
+    /* CONTEÚDO PRINCIPAL */
+    .container{
+      width:100%;
+      margin-left:240px;
+      padding:30px;
+    }
+
+    /* TOPO */
+    header{
+      margin-bottom:30px;
+    }
+
+    /* TÍTULO */
+    header h1{
+      font-size:32px;
+    }
+
+    /* SUBTÍTULO */
+    header p{
+      color:#94a3b8;
+      margin-top:5px;
+    }
+
+    /* BOX */
+    .box{
+      background:#1e293b;
+      padding:20px;
+      border-radius:18px;
+      margin-bottom:20px;
+    }
+
+    /* FILTROS */
+    .filtros{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:15px;
+    }
+
+    /* INPUTS */
+    select,
+    input,
+    button{
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:10px;
+      background:#020617;
+      color:white;
+      margin-top:10px;
+      outline:none;
+    }
+
+    /* BOTÕES */
+    button{
+      background:#2563eb;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    /* HOVER BOTÕES */
+    button:hover{
+      opacity:0.9;
+    }
+
+    /* TOTAL */
+    .total{
+      font-size:42px;
+      color:#ef4444;
+      margin-top:10px;
+    }
+
+    /* LISTAS */
+    ul{
+      list-style:none;
+      margin-top:15px;
+    }
+
+    /* ITENS LISTA */
+    li{
+      background:#020617;
+      padding:14px;
+      border-radius:10px;
+      margin-bottom:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:15px;
+    }
+
+    /* BOTÃO EXCLUIR */
+    .btnExcluir{
+      width:auto;
+      padding:6px 10px;
+      background:#ef4444;
+      margin-top:0;
+    }
+
+    /* AVISO */
+    .aviso{
+      color:#94a3b8;
+      margin-top:10px;
+    }
+
+    /* RESPONSIVIDADE */
+    @media(max-width:900px){
+
+      body{
+        flex-direction:column;
+      }
+
+      .menu{
+        position:relative;
+        width:100%;
+        min-height:auto;
+      }
+
+      .container{
+        margin-left:0;
+      }
+
+      .filtros{
+        grid-template-columns:1fr;
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- MENU -->
+  <aside class="menu">
+
+    <div class="logo">
+      <h2>💵 Meu Dinheiro</h2>
+      <p>Controle financeiro</p>
+    </div>
+
+    <nav>
+      <a href="index.html">Resumo</a>
+      <a href="ganhos.html">Ganhos</a>
+      <a href="gastos.html" class="active">Gastos</a>
+       <a href="fixos.html">Fixos</a>
+      <a href="cofrinhos.html">Cofrinhos</a>
+      <a href="metas.html">Metas</a>
+    </nav>
+
+  </aside>
+
+  <!-- CONTEÚDO -->
+  <main class="container">
+
+    <header>
+      <h1>Gastos</h1>
+      <p>Veja seus gastos separados por mês e ano</p>
+    </header>
+
+    <!-- FILTROS -->
+    <section class="box">
+
+      <h2>Filtrar gastos</h2>
+
+      <div class="filtros">
+
+        <div>
+          <label>Mês</label>
+
+          <select
+            id="filtroMes"
+            onchange="atualizarTelaGastos()"
+          >
+
+            <option value="todos">Todos</option>
+            <option value="0">Janeiro</option>
+            <option value="1">Fevereiro</option>
+            <option value="2">Março</option>
+            <option value="3">Abril</option>
+            <option value="4">Maio</option>
+            <option value="5">Junho</option>
+            <option value="6">Julho</option>
+            <option value="7">Agosto</option>
+            <option value="8">Setembro</option>
+            <option value="9">Outubro</option>
+            <option value="10">Novembro</option>
+            <option value="11">Dezembro</option>
+
+          </select>
+
+        </div>
+
+        <div>
+
+          <label>Ano</label>
+
+          <select
+            id="filtroAno"
+            onchange="atualizarTelaGastos()"
+          >
+
+            <option value="todos">Todos</option>
+
+          </select>
+
+        </div>
+
+        <div>
+
+          <label>Pesquisar</label>
+
+          <input
+            type="text"
+            id="pesquisaGasto"
+            placeholder="Ex: mercado, faculdade..."
+            oninput="atualizarTelaGastos()"
+          >
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- TOTAL -->
+    <section class="box">
+
+      <h2>Total de gastos</h2>
+
+      <h1 class="total" id="totalGastos">
+        R$ 0,00
+      </h1>
+
+    </section>
+
+    <!-- LISTA -->
+    <section class="box">
+
+      <h2>Lista de gastos</h2>
+
+      <ul id="listaGastos"></ul>
+
+    </section>
+
+  </main>
+
+  <script>
+
+
+  // PEGAR TRANSAÇÕES SALVAS
+  let transacoes =
+  JSON.parse(localStorage.getItem("transacoes")) || [];
+
+  // FORMATAR DINHEIRO
+  function formatar(valor){
+
+    return Number(valor).toLocaleString("pt-BR",{
+      style:"currency",
+      currency:"BRL"
+    });
+
+  }
+
+  // SALVAR DADOS
+  function salvarDados(){
+
+    localStorage.setItem(
+      "transacoes",
+      JSON.stringify(transacoes)
+    );
+
+  }
+
+  // COLOCAR ANOS NO FILTRO
+  function carregarAnos(){
+
+    const filtroAno =
+    document.getElementById("filtroAno");
+
+    const gastos =
+    transacoes.filter(item => item.tipo === "gasto");
+
+    const anos =
+    gastos.map(item => {
+
+      if(item.data){
+        return new Date(item.data).getFullYear();
+      }
+
+      return new Date().getFullYear();
+
+    });
+
+    const anosUnicos =
+    [...new Set(anos)];
+
+    anosUnicos.forEach(ano => {
+
+      filtroAno.innerHTML += `
+        <option value="${ano}">
+          ${ano}
+        </option>
+      `;
+
+    });
+
+  }
+
+  // ATUALIZAR TELA
+  function atualizarTelaGastos(){
+
+    const mesSelecionado =
+    document.getElementById("filtroMes").value;
+
+    const anoSelecionado =
+    document.getElementById("filtroAno").value;
+
+    const pesquisa =
+    document.getElementById("pesquisaGasto")
+    .value
+    .toLowerCase();
+
+    let gastos =
+    transacoes.filter(item => item.tipo === "gasto");
+
+    let gastosFiltrados =
+    gastos.filter(item => {
+
+      const data =
+      item.data ? new Date(item.data) : new Date();
+
+      const mes =
+      data.getMonth();
+
+      const ano =
+      data.getFullYear();
+
+      const bateMes =
+      mesSelecionado === "todos" ||
+      Number(mesSelecionado) === mes;
+
+      const bateAno =
+      anoSelecionado === "todos" ||
+      Number(anoSelecionado) === ano;
+
+      const batePesquisa =
+      item.descricao
+      .toLowerCase()
+      .includes(pesquisa);
+
+      return (
+        bateMes &&
+        bateAno &&
+        batePesquisa
+      );
+
+    });
+
+    const total =
+    gastosFiltrados.reduce(
+      (soma,item) => soma + Number(item.valor),
+      0
+    );
+
+    document.getElementById("totalGastos")
+    .textContent = formatar(total);
+
+    const lista =
+    document.getElementById("listaGastos");
+
+    lista.innerHTML = "";
+
+    if(gastosFiltrados.length === 0){
+
+      lista.innerHTML =
+      "<p class='aviso'>Nenhum gasto encontrado.</p>";
+
+      return;
+
+    }
+
+    gastosFiltrados.forEach(item => {
+
+      const data =
+      item.data ? new Date(item.data) : new Date();
+
+      const dataFormatada =
+      data.toLocaleDateString("pt-BR");
+
+      const indexReal =
+      transacoes.indexOf(item);
+
+      lista.innerHTML += `
+        <li>
+
+          <span>
+            🔴 ${item.descricao}
+            <br>
+            <small>${dataFormatada}</small>
+          </span>
+
+          <strong style="color:#ef4444;">
+            ${formatar(item.valor)}
+          </strong>
+
+          <button
+            class="btnExcluir"
+            onclick="excluirGasto(${indexReal})"
+          >
+            X
+          </button>
+
+        </li>
+      `;
+
+    });
+
+  }
+
+  // EXCLUIR GASTO
+  function excluirGasto(index){
+
+    transacoes.splice(index,1);
+
+    salvarDados();
+
+    atualizarTelaGastos();
+
+  }
+
+  // INICIAR
+  carregarAnos();
+
+  atualizarTelaGastos();
+
+</script>

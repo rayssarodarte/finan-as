@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Fixos</title>
+
+  <style>
+    /* RESET GERAL */
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial;
+    }
+
+    /* FUNDO DO SITE */
+    body{
+      background:#020617;
+      color:white;
+      display:flex;
+    }
+
+    /* MENU LATERAL */
+    .menu{
+      width:240px;
+      min-height:100vh;
+      background:#0f172a;
+      padding:25px;
+      position:fixed;
+    }
+
+    /* LOGO */
+    .logo{
+      margin-bottom:40px;
+    }
+
+    /* TEXTO DA LOGO */
+    .logo p{
+      color:#94a3b8;
+      margin-top:5px;
+    }
+
+    /* MENU */
+    .menu nav{
+      display:flex;
+      flex-direction:column;
+      gap:15px;
+    }
+
+    /* LINKS MENU */
+    .menu nav a{
+      color:#94a3b8;
+      text-decoration:none;
+      padding:12px;
+      border-radius:10px;
+    }
+
+    /* HOVER MENU */
+    .menu nav a:hover,
+    .menu nav .active{
+      background:#1e293b;
+      color:white;
+    }
+
+    /* CONTEÚDO PRINCIPAL */
+    .container{
+      width:100%;
+      margin-left:240px;
+      padding:30px;
+    }
+
+    /* TOPO */
+    header{
+      margin-bottom:30px;
+    }
+
+    /* TÍTULO */
+    header h1{
+      font-size:32px;
+    }
+
+    /* SUBTÍTULO */
+    header p{
+      color:#94a3b8;
+      margin-top:5px;
+    }
+
+    /* BOX */
+    .box{
+      background:#1e293b;
+      padding:20px;
+      border-radius:18px;
+      margin-bottom:20px;
+    }
+
+    /* INPUTS */
+    input,
+    button{
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:10px;
+      background:#020617;
+      color:white;
+      margin-top:10px;
+      outline:none;
+    }
+
+    /* BOTÕES */
+    button{
+      background:#2563eb;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    /* HOVER BOTÕES */
+    button:hover{
+      opacity:0.9;
+    }
+
+    /* TOTAL */
+    .total{
+      font-size:42px;
+      color:#a855f7;
+      margin-top:10px;
+    }
+
+    /* LISTAS */
+    ul{
+      list-style:none;
+      margin-top:15px;
+    }
+
+    /* ITENS LISTA */
+    li{
+      background:#020617;
+      padding:14px;
+      border-radius:10px;
+      margin-bottom:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:15px;
+    }
+
+    /* BOTÃO EXCLUIR */
+    .btnExcluir{
+      width:auto;
+      padding:6px 10px;
+      background:#ef4444;
+      margin-top:0;
+    }
+
+    /* AVISO */
+    .aviso{
+      color:#94a3b8;
+      margin-top:10px;
+    }
+
+    /* RESPONSIVIDADE */
+    @media(max-width:900px){
+
+      body{
+        flex-direction:column;
+      }
+
+      .menu{
+        position:relative;
+        width:100%;
+        min-height:auto;
+      }
+
+      .container{
+        margin-left:0;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- MENU -->
+  <aside class="menu">
+
+    <div class="logo">
+      <h2>💵 Meu Dinheiro</h2>
+      <p>Controle financeiro</p>
+    </div>
+
+    <nav>
+      <a href="index.html">Resumo</a>
+      <a href="ganhos.html">Ganhos</a>
+      <a href="gastos.html">Gastos</a>
+      <a href="fixos.html" class="active">Fixos</a>
+      <a href="cofrinhos.html">Cofrinhos</a>
+      <a href="metas.html">Metas</a>
+    </nav>
+
+  </aside>
+
+  <!-- CONTEÚDO -->
+  <main class="container">
+
+    <header>
+      <h1>Gastos Fixos</h1>
+      <p>Adicione, acompanhe e remova seus gastos mensais fixos</p>
+    </header>
+
+  
+
+    <!-- TOTAL -->
+    <section class="box">
+
+      <h2>Total de gastos fixos</h2>
+
+      <h1 class="total" id="totalFixos">
+        R$ 0,00
+      </h1>
+
+    </section>
+
+    <!-- PESQUISA -->
+    <section class="box">
+
+      <h2>Pesquisar fixo</h2>
+
+      <input
+        type="text"
+        id="pesquisaFixo"
+        placeholder="Ex: internet..."
+        oninput="atualizarTelaFixos()"
+      >
+
+    </section>
+
+    <!-- LISTA -->
+    <section class="box">
+
+      <h2>Lista de gastos fixos</h2>
+
+      <ul id="listaFixos"></ul>
+
+    </section>
+
+  </main>
+
+  <script>
+
+    // PEGAR FIXOS SALVOS
+    let fixos =
+    JSON.parse(localStorage.getItem("fixos")) || [];
+
+    // FORMATAR DINHEIRO
+    function formatar(valor){
+
+      return Number(valor).toLocaleString("pt-BR",{
+        style:"currency",
+        currency:"BRL"
+      });
+
+    }
+
+    // SALVAR DADOS
+    function salvarDados(){
+
+      localStorage.setItem(
+        "fixos",
+        JSON.stringify(fixos)
+      );
+
+    }
+
+    // ADICIONAR FIXO
+    function adicionarFixo(){
+
+      const nome =
+      document.getElementById("nomeFixo").value;
+
+      const valor =
+      Number(document.getElementById("valorFixo").value);
+
+      if(nome === "" || valor <= 0){
+        return;
+      }
+
+      fixos.push({
+        nome,
+        valor:Number(valor)
+      });
+
+      document.getElementById("nomeFixo").value = "";
+      document.getElementById("valorFixo").value = "";
+
+      salvarDados();
+
+      atualizarTelaFixos();
+
+    }
+
+    // ATUALIZAR TELA
+    function atualizarTelaFixos(){
+
+      const pesquisa =
+      document.getElementById("pesquisaFixo")
+      .value
+      .toLowerCase();
+
+      // FILTRAR FIXOS
+      const fixosFiltrados =
+      fixos.filter(item => {
+
+        return item.nome
+        .toLowerCase()
+        .includes(pesquisa);
+
+      });
+
+      // SOMAR TOTAL
+      const total =
+      fixos.reduce(
+        (soma,item) => soma + Number(item.valor),
+        0
+      );
+
+      // MOSTRAR TOTAL
+      document.getElementById("totalFixos")
+      .textContent = formatar(total);
+
+      // PEGAR LISTA
+      const lista =
+      document.getElementById("listaFixos");
+
+      // LIMPAR LISTA
+      lista.innerHTML = "";
+
+      // VERIFICAR SE EXISTE FIXO
+      if(fixosFiltrados.length === 0){
+
+        lista.innerHTML =
+        "<p class='aviso'>Nenhum gasto fixo encontrado.</p>";
+
+        return;
+
+      }
+
+      // MOSTRAR FIXOS
+      fixosFiltrados.forEach(item => {
+
+        // PEGAR INDEX REAL
+        const indexReal =
+        fixos.indexOf(item);
+
+        // ADICIONAR ITEM NA LISTA
+        lista.innerHTML += `
+          <li>
+
+            <span>
+              🟣 ${item.nome}
+              <br>
+              <small>Gasto mensal fixo</small>
+            </span>
+
+            <strong style="color:#a855f7;">
+              ${formatar(item.valor)}
+            </strong>
+
+            <button
+              class="btnExcluir"
+              onclick="excluirFixo(${indexReal})"
+            >
+              X
+            </button>
+
+          </li>
+        `;
+
+      });
+
+    }
+
+    // EXCLUIR FIXO
+    function excluirFixo(index){
+
+      // REMOVER FIXO
+      fixos.splice(index,1);
+
+      // SALVAR DADOS
+      salvarDados();
+
+      // ATUALIZAR TELA
+      atualizarTelaFixos();
+
+    }
+
+    // INICIAR
+    atualizarTelaFixos();
+
+  </script>
+
+</body>
+</html>

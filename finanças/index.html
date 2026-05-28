@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Meu Dinheiro</title>
+
+  <style>
+
+    /* RESET GERAL */
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial;
+    }
+
+    /* FUNDO DO SITE */
+    body{
+      background:#020617;
+      color:white;
+      display:flex;
+    }
+
+    /* MENU LATERAL */
+    .menu{
+      width:240px;
+      min-height:100vh;
+      background:#0f172a;
+      padding:25px;
+      position:fixed;
+    }
+
+    /* LOGO */
+    .logo{
+      margin-bottom:40px;
+    }
+
+    /* TEXTO DA LOGO */
+    .logo p{
+      color:#94a3b8;
+      margin-top:5px;
+    }
+
+    /* MENU */
+    .menu nav{
+      display:flex;
+      flex-direction:column;
+      gap:15px;
+    }
+
+    /* LINKS MENU */
+    .menu nav a{
+      color:#94a3b8;
+      text-decoration:none;
+      padding:12px;
+      border-radius:10px;
+      cursor:pointer;
+    }
+
+    /* HOVER MENU */
+    .menu nav a:hover,
+    .menu nav .active{
+      background:#1e293b;
+      color:white;
+    }
+
+    /* BOTÃO SAIR */
+    .logout{
+      margin-top:40px;
+      background:#ef4444;
+    }
+
+    /* CONTEÚDO PRINCIPAL */
+    .container{
+      width:100%;
+      margin-left:240px;
+      padding:30px;
+    }
+
+    /* TOPO */
+    header{
+      margin-bottom:30px;
+    }
+
+    /* TÍTULO */
+    header h1{
+      font-size:32px;
+    }
+
+    /* SUBTÍTULO */
+    header p{
+      color:#94a3b8;
+      margin-top:5px;
+    }
+
+    /* ÁREA DOS CARDS */
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:20px;
+    }
+
+    /* CARD */
+    .card{
+      background:#1e293b;
+      padding:20px;
+      border-radius:18px;
+    }
+
+    /* TEXTO CARD */
+    .card p{
+      color:#cbd5e1;
+      margin-bottom:10px;
+    }
+
+    /* CARD VERDE */
+    .green{
+      border-left:5px solid #22c55e;
+    }
+
+    /* CARD AZUL */
+    .blue{
+      border-left:5px solid #3b82f6;
+    }
+
+    /* CARD VERMELHO */
+    .red{
+      border-left:5px solid #ef4444;
+    }
+
+    /* CARD ROXO */
+    .purple{
+      border-left:5px solid #a855f7;
+    }
+
+    /* CARD AMARELO */
+    .yellow{
+      border-left:5px solid #eab308;
+    }
+
+    /* BOXES */
+    .content{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+      margin-top:20px;
+    }
+
+    /* BOX */
+    .box{
+      background:#1e293b;
+      padding:20px;
+      border-radius:18px;
+    }
+
+    /* INPUTS */
+    input{
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:10px;
+      background:#020617;
+      color:white;
+      margin-top:10px;
+      outline:none;
+    }
+
+    /* BOTÕES */
+    button{
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:10px;
+      background:#2563eb;
+      color:white;
+      font-weight:bold;
+      margin-top:10px;
+      cursor:pointer;
+    }
+
+    /* HOVER BOTÕES */
+    button:hover{
+      opacity:0.9;
+    }
+
+    /* TOTAL */
+    .total{
+      font-size:42px;
+      margin-top:15px;
+    }
+
+    /* LISTAS */
+    ul{
+      list-style:none;
+      margin-top:15px;
+    }
+
+    /* ITENS LISTA */
+    li{
+      background:#020617;
+      padding:12px;
+      border-radius:10px;
+      margin-bottom:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+
+    /* BOTÃO EXCLUIR */
+    .btnExcluir{
+      width:auto;
+      padding:5px 10px;
+      background:#ef4444;
+      margin-top:0;
+    }
+
+    /* METAS */
+    .meta{
+      background:#020617;
+      padding:15px;
+      border-radius:12px;
+      margin-top:15px;
+    }
+
+    /* BARRA META */
+    .barra{
+      width:100%;
+      height:10px;
+      background:#334155;
+      border-radius:20px;
+      margin-top:10px;
+      overflow:hidden;
+    }
+
+    /* PROGRESSO META */
+    .progresso{
+      height:10px;
+      background:#22c55e;
+      border-radius:20px;
+    }
+
+    /* RESPONSIVIDADE */
+    @media(max-width:1400px){
+
+      .cards{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+    }
+
+    @media(max-width:900px){
+
+      body{
+        flex-direction:column;
+      }
+
+      .menu{
+        position:relative;
+        width:100%;
+        min-height:auto;
+      }
+
+      .container{
+        margin-left:0;
+      }
+
+      .cards{
+        grid-template-columns:1fr;
+      }
+
+      .content{
+        grid-template-columns:1fr;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- MENU -->
+  <aside class="menu">
+
+    <div class="logo">
+      <h2>💵 Meu Dinheiro</h2>
+      <p>Controle financeiro</p>
+    </div>
+
+    <nav>
+      <a href="#" class="active">Resumo</a>
+      <a href="ganhos.html">Ganhos</a>
+      <a href="gastos.html">Gastos</a>
+      <a href="fixos.html">Fixos</a>
+      <a href="cofrinhos.html">Cofrinhos</a>
+      <a href="metas.html">Metas</a>
+    </nav>
+
+    <button class="logout" onclick="sair()">
+      Sair
+    </button>
+
+  </aside>
+
+  <!-- CONTEÚDO -->
+  <main class="container">
+
+    <!-- TOPO -->
+    <header>
+
+      <div>
+       <h1>
+  Olá, <span id="nomeUsuario">Lord</span> 👋
+</h1>
+
+        <p>
+          Aqui está o resumo das suas finanças
+        </p>
+      </div>
+
+    </header>
+
+    <!-- CARDS -->
+    <section class="cards">
+
+      <!-- SALDO -->
+      <div class="card green">
+
+        <p>Saldo atual</p>
+
+        <h2 id="saldoAtual">
+          R$ 0,00
+        </h2>
+
+        <input
+          type="number"
+          id="inputSaldo"
+          placeholder="Adicionar saldo"
+        >
+
+        <button onclick="salvarSaldo()">
+          Salvar
+        </button>
+
+        <button onclick="excluirSaldo()">
+          Excluir Saldo
+        </button>
+
+      </div>
+
+      <!-- GANHOS -->
+      <div class="card blue">
+
+        <p>Ganhos do mês</p>
+
+        <h2 id="ganhosMes">
+          R$ 0,00
+        </h2>
+
+        <input
+          type="text"
+          id="descricaoGanho"
+          placeholder="Descrição"
+        >
+
+        <input
+          type="number"
+          id="valorGanho"
+          placeholder="Valor"
+        >
+
+        <button onclick="adicionarGanho()">
+          Adicionar
+        </button>
+
+      </div>
+
+      <!-- GASTOS -->
+      <div class="card red">
+
+        <p>Gastos do mês</p>
+
+        <h2 id="gastosMes">
+          R$ 0,00
+        </h2>
+
+        <input
+          type="text"
+          id="descricaoGasto"
+          placeholder="Descrição"
+        >
+
+        <input
+          type="number"
+          id="valorGasto"
+          placeholder="Valor"
+        >
+
+        <button onclick="adicionarGasto()">
+          Adicionar
+        </button>
+
+      </div>
+
+      <!-- FIXOS -->
+      <div class="card purple">
+
+        <p>Gastos fixos</p>
+
+        <h2 id="gastosFixos">
+          R$ 0,00
+        </h2>
+
+        <input
+          type="text"
+          id="nomeFixo"
+          placeholder="Nome do gasto fixo"
+        >
+
+        <input
+          type="number"
+          id="valorFixo"
+          placeholder="Valor mensal"
+        >
+
+        <button onclick="adicionarFixo()">
+          Adicionar
+        </button>
+
+      </div>
+
+      <!-- COFRINHO -->
+      <div class="card yellow">
+
+        <p>Criar cofrinho</p>
+
+        <h2 id="cofrinho">
+          R$ 0,00
+        </h2>
+
+        <input
+          type="text"
+          id="nomeCofrinho"
+          placeholder="Nome do cofrinho"
+        >
+
+        <input
+          type="number"
+          id="valorCofrinho"
+          placeholder="Valor guardado"
+        >
+
+        <button onclick="adicionarCofrinho()">
+          Criar Cofrinho
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- TOTAL -->
+    <section class="content">
+
+      <div class="box">
+
+        <h2>Total disponível</h2>
+
+        <h1 class="total" id="totalDisponivel">
+          R$ 0,00
+        </h1>
+
+      </div>
+
+      <!-- TRANSAÇÕES -->
+      <div class="box">
+
+        <h2>Últimas transações</h2>
+
+        <ul id="listaTransacoes"></ul>
+
+      </div>
+
+    </section>
+
+    <!-- METAS -->
+    <section class="content">
+
+      <div class="box">
+
+        <h2>Metas / Objetivos</h2>
+
+        <input
+          type="text"
+          id="nomeMeta"
+          placeholder="Nome da meta"
+        >
+
+        <input
+          type="number"
+          id="valorMeta"
+          placeholder="Valor total"
+        >
+
+        <input
+          type="number"
+          id="valorGuardadoMeta"
+          placeholder="Valor guardado"
+        >
+
+        <button onclick="adicionarMeta()">
+          Adicionar Meta
+        </button>
+
+        <div id="listaMetas"></div>
+
+      </div>
+
+      <!-- COFRINHOS -->
+      <div class="box">
+
+        <h2>Meus Cofrinhos</h2>
+
+        <div id="listaCofrinhosCards"></div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script>
+
+  // LOGIN
+  const usuarioAtual =
+  localStorage.getItem("usuarioAtual");
+
+  const nomeUsuario =
+  document.getElementById("nomeUsuario");
+
+  if(!usuarioAtual){
+
+    window.location.href =
+    "login.html";
+
+  }else{
+
+    nomeUsuario.textContent =
+    usuarioAtual;
+
+  }
+
+  // SALDO
+  let saldo =
+  Number(localStorage.getItem("saldo")) || 0;
+
+  // LISTAS
+  let transacoes =
+  JSON.parse(localStorage.getItem("transacoes")) || [];
+
+  let fixos =
+  JSON.parse(localStorage.getItem("fixos")) || [];
+
+  let cofrinhos =
+  JSON.parse(localStorage.getItem("cofrinhos")) || [];
+
+  let metas =
+  JSON.parse(localStorage.getItem("metas")) || [];
+
+  // FORMATAR DINHEIRO
+  function formatar(valor){
+
+    return Number(valor).toLocaleString("pt-BR",{
+      style:"currency",
+      currency:"BRL"
+    });
+
+  }
+
+  // SALVAR DADOS
+  function salvarDados(){
+
+    localStorage.setItem("saldo", saldo);
+
+    localStorage.setItem(
+      "transacoes",
+      JSON.stringify(transacoes)
+    );
+
+    localStorage.setItem(
+      "fixos",
+      JSON.stringify(fixos)
+    );
+
+    localStorage.setItem(
+      "cofrinhos",
+      JSON.stringify(cofrinhos)
+    );
+
+    localStorage.setItem(
+      "metas",
+      JSON.stringify(metas)
+    );
+
+  }
+
+  // SAIR
+ // SAIR
+function sair(){
+
+  localStorage.removeItem("usuarioAtual");
+
+  window.location.href =
+  "login.html";
+
+}
+
+  // SALVAR SALDO
+  function salvarSaldo(){
+
+    saldo =
+    Number(document.getElementById("inputSaldo").value);
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // EXCLUIR SALDO
+  function excluirSaldo(){
+
+    saldo = 0;
+
+    document.getElementById("inputSaldo").value = "";
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // ADICIONAR GANHO
+  function adicionarGanho(){
+
+    const descricao =
+    document.getElementById("descricaoGanho").value;
+
+    const valor =
+    Number(document.getElementById("valorGanho").value);
+
+    if(descricao === "" || valor <= 0){
+      return;
+    }
+
+    transacoes.push({
+      descricao,
+      valor:Number(valor),
+      tipo:"ganho",
+      data:new Date().toISOString()
+    });
+
+    document.getElementById("descricaoGanho").value = "";
+    document.getElementById("valorGanho").value = "";
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // ADICIONAR GASTO
+  function adicionarGasto(){
+
+    const descricao =
+    document.getElementById("descricaoGasto").value;
+
+    const valor =
+    Number(document.getElementById("valorGasto").value);
+
+    if(descricao === "" || valor <= 0){
+      return;
+    }
+
+    transacoes.push({
+      descricao,
+      valor:Number(valor),
+      tipo:"gasto",
+      data:new Date().toISOString()
+    });
+
+    document.getElementById("descricaoGasto").value = "";
+    document.getElementById("valorGasto").value = "";
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // ADICIONAR FIXO
+  function adicionarFixo(){
+
+    const nome =
+    document.getElementById("nomeFixo").value;
+
+    const valor =
+    Number(document.getElementById("valorFixo").value);
+
+    if(nome === "" || valor <= 0){
+      return;
+    }
+
+    fixos.push({
+      nome,
+      valor:Number(valor)
+    });
+
+    document.getElementById("nomeFixo").value = "";
+    document.getElementById("valorFixo").value = "";
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // ADICIONAR COFRINHO
+  function adicionarCofrinho(){
+
+    const nome =
+    document.getElementById("nomeCofrinho").value;
+
+    const valor =
+    Number(document.getElementById("valorCofrinho").value);
+
+    if(nome === "" || valor <= 0){
+      return;
+    }
+
+    cofrinhos.push({
+      nome,
+      valor:Number(valor)
+    });
+
+    document.getElementById("nomeCofrinho").value = "";
+    document.getElementById("valorCofrinho").value = "";
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // ADICIONAR META
+  function adicionarMeta(){
+
+    const nome =
+    document.getElementById("nomeMeta").value;
+
+    const valorTotal =
+    Number(document.getElementById("valorMeta").value);
+
+    const valorGuardado =
+    Number(document.getElementById("valorGuardadoMeta").value);
+
+    if(nome === "" || valorTotal <= 0){
+      return;
+    }
+
+    metas.push({
+      nome,
+      valorTotal:Number(valorTotal),
+      valorGuardado:Number(valorGuardado)
+    });
+
+    document.getElementById("nomeMeta").value = "";
+    document.getElementById("valorMeta").value = "";
+    document.getElementById("valorGuardadoMeta").value = "";
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // EXCLUIR TRANSAÇÃO
+  function excluirTransacao(index){
+
+    transacoes.splice(index,1);
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // EXCLUIR FIXO
+  function excluirFixo(index){
+
+    fixos.splice(index,1);
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // EXCLUIR COFRINHO
+  function excluirCofrinho(index){
+
+    cofrinhos.splice(index,1);
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // EXCLUIR META
+  function excluirMeta(index){
+
+    metas.splice(index,1);
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // ATUALIZAR TELA
+  function atualizarTela(){
+
+    // GANHOS
+    const ganhos =
+    transacoes
+    .filter(item => item.tipo === "ganho")
+    .reduce((t,item)=> t + Number(item.valor),0);
+
+    // GASTOS
+    const gastos =
+    transacoes
+    .filter(item => item.tipo === "gasto")
+    .reduce((t,item)=> t + Number(item.valor),0);
+
+    // FIXOS
+    const totalFixos =
+    fixos.reduce((t,item)=> t + Number(item.valor),0);
+
+    // COFRINHOS
+    const totalCofrinho =
+    cofrinhos.reduce((t,item)=> t + Number(item.valor),0);
+
+    // TOTAL
+    const total =
+    saldo + ganhos - gastos - totalFixos;
+
+    // SALDO
+    document.getElementById("saldoAtual")
+    .textContent = formatar(saldo);
+
+    // GANHOS
+    document.getElementById("ganhosMes")
+    .textContent = formatar(ganhos);
+
+    // GASTOS
+    document.getElementById("gastosMes")
+    .textContent = formatar(gastos);
+
+    // FIXOS
+    document.getElementById("gastosFixos")
+    .textContent = formatar(totalFixos);
+
+    // COFRINHO
+    document.getElementById("cofrinho")
+    .textContent = formatar(totalCofrinho);
+
+    // TOTAL DISPONÍVEL
+    const totalDisponivel =
+    document.getElementById("totalDisponivel");
+
+    totalDisponivel.textContent =
+    formatar(total);
+
+    // COR TOTAL
+    if(total < 0){
+
+      totalDisponivel.style.color =
+      "#ef4444";
+
+    }else{
+
+      totalDisponivel.style.color =
+      "#22c55e";
+
+    }
+
+    // LISTA TRANSAÇÕES
+    const listaTransacoes =
+    document.getElementById("listaTransacoes");
+
+    listaTransacoes.innerHTML = "";
+
+    transacoes.forEach((item,index)=>{
+
+      listaTransacoes.innerHTML += `
+        <li>
+
+          <span>
+            ${item.descricao}
+            -
+            ${formatar(item.valor)}
+          </span>
+
+          <button
+            class="btnExcluir"
+            onclick="excluirTransacao(${index})"
+          >
+            X
+          </button>
+
+        </li>
+      `;
+
+    });
+
+    // LISTA COFRINHOS
+    const listaCofrinhos =
+    document.getElementById("listaCofrinhosCards");
+
+    listaCofrinhos.innerHTML = "";
+
+    cofrinhos.forEach((item,index)=>{
+
+      listaCofrinhos.innerHTML += `
+        <div class="meta">
+
+          <h3>${item.nome}</h3>
+
+          <p>
+            Guardado:
+            ${formatar(item.valor)}
+          </p>
+
+          <button
+            class="btnExcluir"
+            onclick="excluirCofrinho(${index})"
+          >
+            Excluir
+          </button>
+
+        </div>
+      `;
+
+    });
+
+    // LISTA METAS
+    const listaMetas =
+    document.getElementById("listaMetas");
+
+    listaMetas.innerHTML = "";
+
+    metas.forEach((item,index)=>{
+
+      let porcentagem =
+      (Number(item.valorGuardado) / Number(item.valorTotal)) * 100;
+
+      if(porcentagem > 100){
+        porcentagem = 100;
+      }
+
+      listaMetas.innerHTML += `
+        <div class="meta">
+
+          <h3>${item.nome}</h3>
+
+          <p>
+            ${formatar(item.valorGuardado)}
+            de
+            ${formatar(item.valorTotal)}
+          </p>
+
+          <div class="barra">
+            <div
+              class="progresso"
+              style="width:${porcentagem}%"
+            ></div>
+          </div>
+
+          <p>${porcentagem.toFixed(0)}% concluído</p>
+
+          <button
+            class="btnExcluir"
+            onclick="excluirMeta(${index})"
+          >
+            Excluir
+          </button>
+
+        </div>
+      `;
+
+    });
+
+  }
+
+  // INICIAR TELA
+  atualizarTela();
+
+  </script>
+
+</body>
+</html>

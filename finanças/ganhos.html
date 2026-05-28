@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Ganhos</title>
+
+  <style>
+
+    /* RESET GERAL */
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial;
+    }
+
+    /* FUNDO DO SITE */
+    body{
+      background:#020617;
+      color:white;
+      display:flex;
+    }
+
+    /* MENU LATERAL */
+    .menu{
+      width:240px;
+      min-height:100vh;
+      background:#0f172a;
+      padding:25px;
+      position:fixed;
+    }
+
+    /* LOGO */
+    .logo{
+      margin-bottom:40px;
+    }
+
+    /* TEXTO DA LOGO */
+    .logo p{
+      color:#94a3b8;
+      margin-top:5px;
+    }
+
+    /* MENU */
+    .menu nav{
+      display:flex;
+      flex-direction:column;
+      gap:15px;
+    }
+
+    /* LINKS MENU */
+    .menu nav a{
+      color:#94a3b8;
+      text-decoration:none;
+      padding:12px;
+      border-radius:10px;
+    }
+
+    /* HOVER MENU */
+    .menu nav a:hover,
+    .menu nav .active{
+      background:#1e293b;
+      color:white;
+    }
+
+    /* CONTEÚDO PRINCIPAL */
+    .container{
+      width:100%;
+      margin-left:240px;
+      padding:30px;
+    }
+
+    /* TOPO */
+    header{
+      margin-bottom:30px;
+    }
+
+    /* TÍTULO */
+    header h1{
+      font-size:32px;
+    }
+
+    /* SUBTÍTULO */
+    header p{
+      color:#94a3b8;
+      margin-top:5px;
+    }
+
+    /* BOX */
+    .box{
+      background:#1e293b;
+      padding:20px;
+      border-radius:18px;
+      margin-bottom:20px;
+    }
+
+    /* FILTROS */
+    .filtros{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:15px;
+    }
+
+    /* INPUTS */
+    select,
+    input,
+    button{
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:10px;
+      background:#020617;
+      color:white;
+      margin-top:10px;
+      outline:none;
+    }
+
+    /* BOTÕES */
+    button{
+      background:#2563eb;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    /* HOVER BOTÕES */
+    button:hover{
+      opacity:0.9;
+    }
+
+    /* TOTAL */
+    .total{
+      font-size:42px;
+      color:#22c55e;
+      margin-top:10px;
+    }
+
+    /* LISTAS */
+    ul{
+      list-style:none;
+      margin-top:15px;
+    }
+
+    /* ITENS LISTA */
+    li{
+      background:#020617;
+      padding:14px;
+      border-radius:10px;
+      margin-bottom:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    /* BOTÃO EXCLUIR */
+    .btnExcluir{
+      width:auto;
+      padding:6px 10px;
+      background:#ef4444;
+      margin-top:0;
+    }
+
+    /* AVISO */
+    .aviso{
+      color:#94a3b8;
+      margin-top:10px;
+    }
+
+    /* RESPONSIVIDADE */
+    @media(max-width:900px){
+
+      body{
+        flex-direction:column;
+      }
+
+      .menu{
+        position:relative;
+        width:100%;
+        min-height:auto;
+      }
+
+      .container{
+        margin-left:0;
+      }
+
+      .filtros{
+        grid-template-columns:1fr;
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- MENU -->
+  <aside class="menu">
+
+    <div class="logo">
+      <h2>💵 Meu Dinheiro</h2>
+      <p>Controle financeiro</p>
+    </div>
+
+    <nav>
+      <a href="index.html">Resumo</a>
+      <a href="ganhos.html" class="active">Ganhos</a>
+      <a href="gastos.html">Gastos</a>
+      <a href="fixos.html">Fixos</a>
+      <a href="cofrinhos.html">Cofrinhos</a>
+      <a href="metas.html">Metas</a>
+    </nav>
+
+  </aside>
+
+  <!-- CONTEÚDO -->
+  <main class="container">
+
+    <header>
+      <h1>Ganhos</h1>
+      <p>Veja seus ganhos separados por mês e ano</p>
+    </header>
+
+    <!-- FILTROS -->
+    <section class="box">
+
+      <h2>Filtrar ganhos</h2>
+
+      <div class="filtros">
+
+        <div>
+          <label>Mês</label>
+
+          <select
+            id="filtroMes"
+            onchange="atualizarTelaGanhos()"
+          >
+
+            <option value="todos">Todos</option>
+            <option value="0">Janeiro</option>
+            <option value="1">Fevereiro</option>
+            <option value="2">Março</option>
+            <option value="3">Abril</option>
+            <option value="4">Maio</option>
+            <option value="5">Junho</option>
+            <option value="6">Julho</option>
+            <option value="7">Agosto</option>
+            <option value="8">Setembro</option>
+            <option value="9">Outubro</option>
+            <option value="10">Novembro</option>
+            <option value="11">Dezembro</option>
+
+          </select>
+
+        </div>
+
+        <div>
+
+          <label>Ano</label>
+
+          <select
+            id="filtroAno"
+            onchange="atualizarTelaGanhos()"
+          >
+
+            <option value="todos">Todos</option>
+
+          </select>
+
+        </div>
+
+        <div>
+
+          <label>Pesquisar</label>
+
+          <input
+            type="text"
+            id="pesquisaGanho"
+            placeholder="Ex: salário, freelance..."
+            oninput="atualizarTelaGanhos()"
+          >
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- TOTAL -->
+    <section class="box">
+
+      <h2>Total de ganhos</h2>
+
+      <h1 class="total" id="totalGanhos">
+        R$ 0,00
+      </h1>
+
+    </section>
+
+    <!-- LISTA -->
+    <section class="box">
+
+      <h2>Lista de ganhos</h2>
+
+      <ul id="listaGanhos"></ul>
+
+    </section>
+
+  </main>
+
+  <script>
+
+    // PEGAR TRANSAÇÕES SALVAS
+    let transacoes =
+    JSON.parse(localStorage.getItem("transacoes")) || [];
+
+    // FORMATAR DINHEIRO
+    function formatar(valor){
+
+      return valor.toLocaleString("pt-BR",{
+        style:"currency",
+        currency:"BRL"
+      });
+
+    }
+
+    // SALVAR DADOS
+    function salvarDados(){
+
+      localStorage.setItem(
+        "transacoes",
+        JSON.stringify(transacoes)
+      );
+
+    }
+
+    // COLOCAR ANOS NO FILTRO
+    function carregarAnos(){
+
+      const filtroAno =
+      document.getElementById("filtroAno");
+
+      // PEGAR SOMENTE GANHOS
+      const ganhos =
+      transacoes.filter(item => item.tipo === "ganho");
+
+      // PEGAR ANOS
+      const anos =
+      ganhos.map(item => {
+
+        if(item.data){
+
+          return new Date(item.data)
+          .getFullYear();
+
+        }
+
+        return new Date().getFullYear();
+
+      });
+
+      // REMOVER ANOS REPETIDOS
+      const anosUnicos =
+      [...new Set(anos)];
+
+      // ADICIONAR ANOS NO SELECT
+      anosUnicos.forEach(ano => {
+
+        filtroAno.innerHTML += `
+          <option value="${ano}">
+            ${ano}
+          </option>
+        `;
+
+      });
+
+    }
+
+    // ATUALIZAR TELA
+    function atualizarTelaGanhos(){
+
+      // PEGAR FILTROS
+      const mesSelecionado =
+      document.getElementById("filtroMes").value;
+
+      const anoSelecionado =
+      document.getElementById("filtroAno").value;
+
+      const pesquisa =
+      document.getElementById("pesquisaGanho")
+      .value
+      .toLowerCase();
+
+      // PEGAR SOMENTE GANHOS
+      let ganhos =
+      transacoes.filter(item => item.tipo === "ganho");
+
+      // FILTRAR GANHOS
+      ganhos = ganhos.filter(item => {
+
+        const data =
+        item.data ? new Date(item.data) : new Date();
+
+        const mes =
+        data.getMonth();
+
+        const ano =
+        data.getFullYear();
+
+        // VERIFICAR MÊS
+        const bateMes =
+        mesSelecionado === "todos" ||
+        Number(mesSelecionado) === mes;
+
+        // VERIFICAR ANO
+        const bateAno =
+        anoSelecionado === "todos" ||
+        Number(anoSelecionado) === ano;
+
+        // VERIFICAR PESQUISA
+        const batePesquisa =
+        item.descricao
+        .toLowerCase()
+        .includes(pesquisa);
+
+        return (
+          bateMes &&
+          bateAno &&
+          batePesquisa
+        );
+
+      });
+
+      // SOMAR TOTAL
+      const total =
+      ganhos.reduce(
+        (soma,item) => soma + item.valor,
+        0
+      );
+
+      // MOSTRAR TOTAL
+      document.getElementById("totalGanhos")
+      .textContent = formatar(total);
+
+      // PEGAR LISTA
+      const lista =
+      document.getElementById("listaGanhos");
+
+      // LIMPAR LISTA
+      lista.innerHTML = "";
+
+      // VERIFICAR SE EXISTE GANHO
+      if(ganhos.length === 0){
+
+        lista.innerHTML =
+        "<p class='aviso'>Nenhum ganho encontrado.</p>";
+
+        return;
+
+      }
+
+      // MOSTRAR GANHOS
+      ganhos.forEach(item => {
+
+        const data =
+        item.data ? new Date(item.data) : new Date();
+
+        // FORMATAR DATA
+        const dataFormatada =
+        data.toLocaleDateString("pt-BR");
+
+        // PEGAR INDEX REAL
+        const indexReal =
+        transacoes.indexOf(item);
+
+        // ADICIONAR ITEM NA LISTA
+        lista.innerHTML += `
+          <li>
+
+            <span>
+              🟢 ${item.descricao}
+              <br>
+              <small>${dataFormatada}</small>
+            </span>
+
+            <strong>${formatar(item.valor)}</strong>
+
+            <button
+              class="btnExcluir"
+              onclick="excluirGanho(${indexReal})"
+            >
+              X
+            </button>
+
+          </li>
+        `;
+
+      });
+
+    }
+
+    // EXCLUIR GANHO
+    function excluirGanho(index){
+
+      // REMOVER GANHO
+      transacoes.splice(index,1);
+
+      // SALVAR DADOS
+      salvarDados();
+
+      // ATUALIZAR TELA
+      atualizarTelaGanhos();
+
+    }
+
+    // INICIAR
+    carregarAnos();
+
+    atualizarTelaGanhos();
+
+  </script>
+
+</body>
+</html>
