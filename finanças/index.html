@@ -100,7 +100,7 @@
     /* ÁREA DOS CARDS */
     .cards{
       display:grid;
-      grid-template-columns:repeat(5,1fr);
+      grid-template-columns:repeat(6,1fr);
       gap:20px;
     }
 
@@ -109,6 +109,12 @@
       background:#1e293b;
       padding:20px;
       border-radius:18px;
+      transition:0.3s;
+    }
+
+    /* HOVER CARD */
+    .card:hover{
+      transform:translateY(-5px);
     }
 
     /* TEXTO CARD */
@@ -140,6 +146,11 @@
     /* CARD AMARELO */
     .yellow{
       border-left:5px solid #eab308;
+    }
+
+    /* CARD LARANJA */
+    .orange{
+      border-left:5px solid #f97316;
     }
 
     /* BOXES */
@@ -219,12 +230,43 @@
       margin-top:0;
     }
 
+    /* BOTÃO EDITAR */
+    .btnEditar{
+      width:auto;
+      padding:5px 10px;
+      background:#eab308;
+      margin-top:0;
+    }
+
+    /* BOTÃO PAGO */
+    .btnPago{
+      width:auto;
+      padding:5px 10px;
+      background:#22c55e;
+      margin-top:0;
+    }
+
+    /* ÁREA DE BOTÕES PEQUENOS */
+    .acoes{
+      display:flex;
+      gap:10px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+
     /* METAS */
     .meta{
       background:#020617;
       padding:15px;
       border-radius:12px;
       margin-top:15px;
+    }
+
+    /* TEXTO MENOR */
+    .textoPequeno{
+      color:#94a3b8;
+      font-size:14px;
+      margin-top:8px;
     }
 
     /* BARRA META */
@@ -245,7 +287,15 @@
     }
 
     /* RESPONSIVIDADE */
-    @media(max-width:1400px){
+    @media(max-width:1600px){
+
+      .cards{
+        grid-template-columns:repeat(3,1fr);
+      }
+
+    }
+
+    @media(max-width:1100px){
 
       .cards{
         grid-template-columns:repeat(2,1fr);
@@ -300,6 +350,7 @@
       <a href="fixos.html">Fixos</a>
       <a href="cofrinhos.html">Cofrinhos</a>
       <a href="metas.html">Metas</a>
+      <a href="receber.html">A receber</a>
     </nav>
 
     <button class="logout" onclick="sair()">
@@ -315,9 +366,9 @@
     <header>
 
       <div>
-       <h1>
-  Olá, <span id="nomeUsuario">Lord</span> 👋
-</h1>
+        <h1>
+          Olá, <span id="nomeUsuario">Lord</span> 👋
+        </h1>
 
         <p>
           Aqui está o resumo das suas finanças
@@ -462,6 +513,39 @@
 
       </div>
 
+      <!-- A RECEBER -->
+      <div class="card orange">
+
+        <p>A receber</p>
+
+        <h2 id="totalReceber">
+          R$ 0,00
+        </h2>
+
+        <input
+          type="text"
+          id="nomeReceber"
+          placeholder="Quem te deve?"
+        >
+
+        <input
+          type="text"
+          id="descricaoReceber"
+          placeholder="Descrição"
+        >
+
+        <input
+          type="number"
+          id="valorReceber"
+          placeholder="Valor"
+        >
+
+        <button onclick="adicionarReceber()">
+          Adicionar
+        </button>
+
+      </div>
+
     </section>
 
     <!-- TOTAL -->
@@ -475,6 +559,10 @@
           R$ 0,00
         </h1>
 
+        <p class="textoPequeno">
+          Os gastos fixos só entram no total quando forem marcados como pagos.
+        </p>
+
       </div>
 
       <!-- TRANSAÇÕES -->
@@ -483,6 +571,29 @@
         <h2>Últimas transações</h2>
 
         <ul id="listaTransacoes"></ul>
+
+      </div>
+
+    </section>
+
+    <!-- FIXOS E A RECEBER -->
+    <section class="content">
+
+      <!-- LISTA DE FIXOS -->
+      <div class="box">
+
+        <h2>Gastos Fixos</h2>
+
+        <div id="listaFixos"></div>
+
+      </div>
+
+      <!-- LISTA A RECEBER -->
+      <div class="box">
+
+        <h2>Contas a receber</h2>
+
+        <div id="listaReceber"></div>
 
       </div>
 
@@ -572,6 +683,9 @@
   let metas =
   JSON.parse(localStorage.getItem("metas")) || [];
 
+  let receber =
+  JSON.parse(localStorage.getItem("receber")) || [];
+
   // FORMATAR DINHEIRO
   function formatar(valor){
 
@@ -607,24 +721,30 @@
       JSON.stringify(metas)
     );
 
+    localStorage.setItem(
+      "receber",
+      JSON.stringify(receber)
+    );
+
   }
 
   // SAIR
- // SAIR
-function sair(){
+  function sair(){
 
-  localStorage.removeItem("usuarioAtual");
+    localStorage.removeItem("usuarioAtual");
 
-  window.location.href =
-  "login.html";
+    window.location.href =
+    "login.html";
 
-}
+  }
 
   // SALVAR SALDO
   function salvarSaldo(){
 
     saldo =
     Number(document.getElementById("inputSaldo").value);
+
+    document.getElementById("inputSaldo").value = "";
 
     salvarDados();
 
@@ -718,7 +838,8 @@ function sair(){
 
     fixos.push({
       nome,
-      valor:Number(valor)
+      valor:Number(valor),
+      pago:false
     });
 
     document.getElementById("nomeFixo").value = "";
@@ -789,6 +910,39 @@ function sair(){
 
   }
 
+  // ADICIONAR A RECEBER
+  function adicionarReceber(){
+
+    const nome =
+    document.getElementById("nomeReceber").value;
+
+    const descricao =
+    document.getElementById("descricaoReceber").value;
+
+    const valor =
+    Number(document.getElementById("valorReceber").value);
+
+    if(nome === "" || descricao === "" || valor <= 0){
+      return;
+    }
+
+    receber.push({
+      nome,
+      descricao,
+      valor:Number(valor),
+      recebido:false
+    });
+
+    document.getElementById("nomeReceber").value = "";
+    document.getElementById("descricaoReceber").value = "";
+    document.getElementById("valorReceber").value = "";
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
   // EXCLUIR TRANSAÇÃO
   function excluirTransacao(index){
 
@@ -811,6 +965,57 @@ function sair(){
 
   }
 
+  // PAGAR FIXO
+  function pagarFixo(index){
+
+    if(fixos[index].pago){
+      return;
+    }
+
+    transacoes.push({
+      descricao:"Fixo pago: " + fixos[index].nome,
+      valor:Number(fixos[index].valor),
+      tipo:"gasto",
+      data:new Date().toISOString()
+    });
+
+    fixos[index].pago = true;
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // EDITAR FIXO
+  function editarFixo(index){
+
+    const novoNome =
+    prompt("Digite o novo nome do gasto fixo:", fixos[index].nome);
+
+    if(novoNome === null || novoNome === ""){
+      return;
+    }
+
+    const novoValor =
+    prompt("Digite o novo valor do gasto fixo:", fixos[index].valor);
+
+    if(novoValor === null || novoValor === "" || Number(novoValor) <= 0){
+      return;
+    }
+
+    fixos[index].nome =
+    novoNome;
+
+    fixos[index].valor =
+    Number(novoValor);
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
   // EXCLUIR COFRINHO
   function excluirCofrinho(index){
 
@@ -822,10 +1027,150 @@ function sair(){
 
   }
 
+  // EDITAR COFRINHO
+  function editarCofrinho(index){
+
+    const novoNome =
+    prompt("Digite o novo nome do cofrinho:", cofrinhos[index].nome);
+
+    if(novoNome === null || novoNome === ""){
+      return;
+    }
+
+    const novoValor =
+    prompt("Digite o novo valor guardado:", cofrinhos[index].valor);
+
+    if(novoValor === null || novoValor === "" || Number(novoValor) < 0){
+      return;
+    }
+
+    cofrinhos[index].nome =
+    novoNome;
+
+    cofrinhos[index].valor =
+    Number(novoValor);
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
   // EXCLUIR META
   function excluirMeta(index){
 
     metas.splice(index,1);
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // EDITAR META
+  function editarMeta(index){
+
+    const novoNome =
+    prompt("Digite o novo nome da meta:", metas[index].nome);
+
+    if(novoNome === null || novoNome === ""){
+      return;
+    }
+
+    const novoTotal =
+    prompt("Digite o valor total da meta:", metas[index].valorTotal);
+
+    if(novoTotal === null || novoTotal === "" || Number(novoTotal) <= 0){
+      return;
+    }
+
+    const novoGuardado =
+    prompt("Digite o valor guardado:", metas[index].valorGuardado);
+
+    if(novoGuardado === null || novoGuardado === "" || Number(novoGuardado) < 0){
+      return;
+    }
+
+    metas[index].nome =
+    novoNome;
+
+    metas[index].valorTotal =
+    Number(novoTotal);
+
+    metas[index].valorGuardado =
+    Number(novoGuardado);
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // EXCLUIR A RECEBER
+  function excluirReceber(index){
+
+    receber.splice(index,1);
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // EDITAR A RECEBER
+  function editarReceber(index){
+
+    const novoNome =
+    prompt("Digite o nome da pessoa:", receber[index].nome);
+
+    if(novoNome === null || novoNome === ""){
+      return;
+    }
+
+    const novaDescricao =
+    prompt("Digite a descrição:", receber[index].descricao);
+
+    if(novaDescricao === null || novaDescricao === ""){
+      return;
+    }
+
+    const novoValor =
+    prompt("Digite o valor:", receber[index].valor);
+
+    if(novoValor === null || novoValor === "" || Number(novoValor) <= 0){
+      return;
+    }
+
+    receber[index].nome =
+    novoNome;
+
+    receber[index].descricao =
+    novaDescricao;
+
+    receber[index].valor =
+    Number(novoValor);
+
+    salvarDados();
+
+    atualizarTela();
+
+  }
+
+  // MARCAR COMO RECEBIDO
+  function marcarRecebido(index){
+
+    if(receber[index].recebido){
+      return;
+    }
+
+    transacoes.push({
+      descricao:"Recebido de " + receber[index].nome + ": " + receber[index].descricao,
+      valor:Number(receber[index].valor),
+      tipo:"ganho",
+      data:new Date().toISOString()
+    });
+
+    receber[index].recebido = true;
 
     salvarDados();
 
@@ -856,9 +1201,15 @@ function sair(){
     const totalCofrinho =
     cofrinhos.reduce((t,item)=> t + Number(item.valor),0);
 
+    // A RECEBER
+    const totalReceber =
+    receber
+    .filter(item => item.recebido === false)
+    .reduce((t,item)=> t + Number(item.valor),0);
+
     // TOTAL
     const total =
-    saldo + ganhos - gastos - totalFixos;
+    saldo + ganhos - gastos;
 
     // SALDO
     document.getElementById("saldoAtual")
@@ -879,6 +1230,10 @@ function sair(){
     // COFRINHO
     document.getElementById("cofrinho")
     .textContent = formatar(totalCofrinho);
+
+    // TOTAL A RECEBER
+    document.getElementById("totalReceber")
+    .textContent = formatar(totalReceber);
 
     // TOTAL DISPONÍVEL
     const totalDisponivel =
@@ -908,13 +1263,16 @@ function sair(){
 
     transacoes.forEach((item,index)=>{
 
+      const sinal =
+      item.tipo === "ganho" ? "+" : "-";
+
       listaTransacoes.innerHTML += `
         <li>
 
           <span>
-            ${item.descricao}
+            ${sinal} ${formatar(item.valor)}
             -
-            ${formatar(item.valor)}
+            ${item.descricao}
           </span>
 
           <button
@@ -925,6 +1283,133 @@ function sair(){
           </button>
 
         </li>
+      `;
+
+    });
+
+    // LISTA FIXOS
+    const listaFixos =
+    document.getElementById("listaFixos");
+
+    listaFixos.innerHTML = "";
+
+    fixos.forEach((item,index)=>{
+
+      if(item.pago === undefined){
+        item.pago = false;
+      }
+
+      listaFixos.innerHTML += `
+        <div class="meta">
+
+          <h3>${item.nome}</h3>
+
+          <p>
+            Valor mensal:
+            ${formatar(item.valor)}
+          </p>
+
+          <p class="textoPequeno">
+            Status:
+            ${item.pago ? "Pago" : "Pendente"}
+          </p>
+
+          <div class="acoes">
+
+            ${
+              !item.pago
+              ?
+              `
+              <button
+                class="btnPago"
+                onclick="pagarFixo(${index})"
+              >
+                Pago
+              </button>
+              `
+              :
+              ""
+            }
+
+            <button
+              class="btnEditar"
+              onclick="editarFixo(${index})"
+            >
+              Editar
+            </button>
+
+            <button
+              class="btnExcluir"
+              onclick="excluirFixo(${index})"
+            >
+              Excluir
+            </button>
+
+          </div>
+
+        </div>
+      `;
+
+    });
+
+    // LISTA A RECEBER
+    const listaReceber =
+    document.getElementById("listaReceber");
+
+    listaReceber.innerHTML = "";
+
+    receber.forEach((item,index)=>{
+
+      listaReceber.innerHTML += `
+        <div class="meta">
+
+          <h3>${item.nome}</h3>
+
+          <p>
+            ${item.descricao}
+            -
+            ${formatar(item.valor)}
+          </p>
+
+          <p class="textoPequeno">
+            Status:
+            ${item.recebido ? "Recebido" : "Pendente"}
+          </p>
+
+          <div class="acoes">
+
+            ${
+              !item.recebido
+              ?
+              `
+              <button
+                class="btnPago"
+                onclick="marcarRecebido(${index})"
+              >
+                Recebido
+              </button>
+              `
+              :
+              ""
+            }
+
+            <button
+              class="btnEditar"
+              onclick="editarReceber(${index})"
+            >
+              Editar
+            </button>
+
+            <button
+              class="btnExcluir"
+              onclick="excluirReceber(${index})"
+            >
+              Excluir
+            </button>
+
+          </div>
+
+        </div>
       `;
 
     });
@@ -947,12 +1432,23 @@ function sair(){
             ${formatar(item.valor)}
           </p>
 
-          <button
-            class="btnExcluir"
-            onclick="excluirCofrinho(${index})"
-          >
-            Excluir
-          </button>
+          <div class="acoes">
+
+            <button
+              class="btnEditar"
+              onclick="editarCofrinho(${index})"
+            >
+              Editar
+            </button>
+
+            <button
+              class="btnExcluir"
+              onclick="excluirCofrinho(${index})"
+            >
+              Excluir
+            </button>
+
+          </div>
 
         </div>
       `;
@@ -994,17 +1490,30 @@ function sair(){
 
           <p>${porcentagem.toFixed(0)}% concluído</p>
 
-          <button
-            class="btnExcluir"
-            onclick="excluirMeta(${index})"
-          >
-            Excluir
-          </button>
+          <div class="acoes">
+
+            <button
+              class="btnEditar"
+              onclick="editarMeta(${index})"
+            >
+              Editar
+            </button>
+
+            <button
+              class="btnExcluir"
+              onclick="excluirMeta(${index})"
+            >
+              Excluir
+            </button>
+
+          </div>
 
         </div>
       `;
 
     });
+
+    salvarDados();
 
   }
 
