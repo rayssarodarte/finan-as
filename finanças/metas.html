@@ -96,6 +96,14 @@
       margin-bottom:20px;
     }
 
+    /* FORMULÁRIO */
+    .formGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:15px;
+      margin-top:10px;
+    }
+
     /* INPUTS */
     input,
     button{
@@ -155,6 +163,14 @@
       margin-bottom:10px;
     }
 
+    /* VALOR */
+    .valor{
+      font-size:24px;
+      color:#22c55e;
+      font-weight:bold;
+      margin-bottom:10px;
+    }
+
     /* BARRA */
     .barra{
       width:100%;
@@ -172,15 +188,39 @@
       border-radius:20px;
     }
 
+    /* AÇÕES */
+    .acoes{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+
     /* BOTÃO EXCLUIR */
     .btnExcluir{
       background:#ef4444;
+    }
+
+    /* BOTÃO VERDE */
+    .btnVerde{
+      background:#22c55e;
+    }
+
+    /* BOTÃO AMARELO */
+    .btnAmarelo{
+      background:#eab308;
     }
 
     /* AVISO */
     .aviso{
       color:#94a3b8;
       margin-top:10px;
+    }
+
+    /* CONCLUÍDA */
+    .concluida{
+      color:#22c55e;
+      font-weight:bold;
     }
 
     /* RESPONSIVIDADE */
@@ -200,7 +240,8 @@
         margin-left:0;
       }
 
-      .cardsMetas{
+      .cardsMetas,
+      .formGrid{
         grid-template-columns:1fr;
       }
 
@@ -226,6 +267,11 @@
       <a href="fixos.html">Fixos</a>
       <a href="cofrinhos.html">Cofrinhos</a>
       <a href="metas.html" class="active">Metas</a>
+       <a href="receber.html">A receber</a>
+       
+       <button class="logout" onclick="sair()">
+      Sair
+    </button>
     </nav>
 
   </aside>
@@ -238,6 +284,38 @@
       <p>Acompanhe seus objetivos financeiros</p>
     </header>
 
+    <!-- CADASTRO -->
+    <section class="box">
+
+      <h2>Criar nova meta</h2>
+
+      <div class="formGrid">
+
+        <input
+          type="text"
+          id="nomeMeta"
+          placeholder="Nome da meta"
+        >
+
+        <input
+          type="number"
+          id="valorMeta"
+          placeholder="Valor total da meta"
+        >
+
+        <input
+          type="number"
+          id="valorGuardadoMeta"
+          placeholder="Valor já guardado"
+        >
+
+      </div>
+
+      <button onclick="adicionarMeta()">
+        Adicionar Meta
+      </button>
+
+    </section>
 
     <!-- TOTAL -->
     <section class="box">
@@ -314,9 +392,9 @@
       Number(document.getElementById("valorMeta").value);
 
       const valorGuardado =
-      Number(document.getElementById("valorGuardadoMeta").value);
+      Number(document.getElementById("valorGuardadoMeta").value) || 0;
 
-      if(nome === "" || valorTotal <= 0){
+      if(nome === "" || valorTotal <= 0 || valorGuardado < 0){
         return;
       }
 
@@ -329,6 +407,79 @@
       document.getElementById("nomeMeta").value = "";
       document.getElementById("valorMeta").value = "";
       document.getElementById("valorGuardadoMeta").value = "";
+
+      salvarDados();
+
+      atualizarTelaMetas();
+
+    }
+
+    // EDITAR META
+    function editarMeta(index){
+
+      const novoNome =
+      prompt("Digite o novo nome da meta:", metas[index].nome);
+
+      if(novoNome === null || novoNome === ""){
+        return;
+      }
+
+      const novoValorTotal =
+      prompt("Digite o novo valor total:", metas[index].valorTotal);
+
+      if(
+        novoValorTotal === null ||
+        novoValorTotal === "" ||
+        Number(novoValorTotal) <= 0
+      ){
+        return;
+      }
+
+      metas[index].nome = novoNome;
+      metas[index].valorTotal = Number(novoValorTotal);
+
+      salvarDados();
+
+      atualizarTelaMetas();
+
+    }
+
+    // ADICIONAR DINHEIRO NA META
+    function adicionarDinheiroMeta(index){
+
+      const valor =
+      Number(prompt("Quanto deseja adicionar nessa meta?"));
+
+      if(valor <= 0){
+        return;
+      }
+
+      metas[index].valorGuardado =
+      Number(metas[index].valorGuardado) + valor;
+
+      salvarDados();
+
+      atualizarTelaMetas();
+
+    }
+
+    // RETIRAR DINHEIRO DA META
+    function retirarDinheiroMeta(index){
+
+      const valor =
+      Number(prompt("Quanto deseja retirar dessa meta?"));
+
+      if(valor <= 0){
+        return;
+      }
+
+      if(valor > Number(metas[index].valorGuardado)){
+        alert("Você não pode retirar mais do que tem guardado.");
+        return;
+      }
+
+      metas[index].valorGuardado =
+      Number(metas[index].valorGuardado) - valor;
 
       salvarDados();
 
@@ -401,16 +552,19 @@
         const faltante =
         Number(item.valorTotal) - Number(item.valorGuardado);
 
+        // VERIFICAR SE FOI CONCLUÍDA
+        const concluida =
+        Number(item.valorGuardado) >= Number(item.valorTotal);
+
         // ADICIONAR ITEM NA LISTA
         lista.innerHTML += `
           <div class="metaCard">
 
             <h3>🎯 ${item.nome}</h3>
 
-            <p>
-              Guardado:
+            <div class="valor">
               ${formatar(item.valorGuardado)}
-            </p>
+            </div>
 
             <p>
               Meta:
@@ -433,12 +587,38 @@
               ${formatar(faltante < 0 ? 0 : faltante)}
             </p>
 
-            <button
-              class="btnExcluir"
-              onclick="excluirMeta(${indexReal})"
-            >
-              Excluir
-            </button>
+            <p class="${concluida ? "concluida" : ""}">
+              ${concluida ? "✅ Meta concluída" : "⏳ Em andamento"}
+            </p>
+
+            <div class="acoes">
+
+              <button
+                class="btnVerde"
+                onclick="adicionarDinheiroMeta(${indexReal})"
+              >
+                + Guardar
+              </button>
+
+              <button
+                class="btnAmarelo"
+                onclick="retirarDinheiroMeta(${indexReal})"
+              >
+                - Retirar
+              </button>
+
+              <button onclick="editarMeta(${indexReal})">
+                Editar
+              </button>
+
+              <button
+                class="btnExcluir"
+                onclick="excluirMeta(${indexReal})"
+              >
+                Excluir
+              </button>
+
+            </div>
 
           </div>
         `;
