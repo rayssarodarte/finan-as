@@ -65,6 +65,12 @@
       color:white;
     }
 
+    /* BOTÃO SAIR */
+    .logout{
+      margin-top:40px;
+      background:#ef4444;
+    }
+
     /* CONTEÚDO PRINCIPAL */
     .container{
       width:100%;
@@ -94,6 +100,14 @@
       padding:20px;
       border-radius:18px;
       margin-bottom:20px;
+    }
+
+    /* FORMULÁRIO */
+    .formulario{
+      display:grid;
+      grid-template-columns:1fr 1fr auto;
+      gap:15px;
+      align-items:end;
     }
 
     /* FILTROS */
@@ -148,9 +162,29 @@
       padding:14px;
       border-radius:10px;
       margin-bottom:10px;
-      display:flex;
-      justify-content:space-between;
+      display:grid;
+      grid-template-columns:1fr auto auto;
       align-items:center;
+      gap:12px;
+    }
+
+    /* TEXTO MENOR */
+    small{
+      color:#94a3b8;
+    }
+
+    /* ÁREA DOS BOTÕES */
+    .acoes{
+      display:flex;
+      gap:8px;
+    }
+
+    /* BOTÃO EDITAR */
+    .btnEditar{
+      width:auto;
+      padding:6px 10px;
+      background:#3b82f6;
+      margin-top:0;
     }
 
     /* BOTÃO EXCLUIR */
@@ -184,8 +218,21 @@
         margin-left:0;
       }
 
+      .formulario,
       .filtros{
         grid-template-columns:1fr;
+      }
+
+      li{
+        grid-template-columns:1fr;
+      }
+
+      .acoes{
+        width:100%;
+      }
+
+      .acoes button{
+        width:100%;
       }
 
     }
@@ -210,7 +257,12 @@
       <a href="fixos.html">Fixos</a>
       <a href="cofrinhos.html">Cofrinhos</a>
       <a href="metas.html">Metas</a>
+      <a href="receber.html">A receber</a>
     </nav>
+
+    <button class="logout" onclick="sair()">
+      Sair
+    </button>
 
   </aside>
 
@@ -219,8 +271,45 @@
 
     <header>
       <h1>Ganhos</h1>
-      <p>Veja seus ganhos separados por mês e ano</p>
+      <p>Adicione, edite e acompanhe seus ganhos do mês</p>
     </header>
+
+    <!-- ADICIONAR GANHO -->
+    <section class="box">
+
+      <h2>Adicionar ganho</h2>
+
+      <div class="formulario">
+
+        <div>
+          <label>Descrição</label>
+
+          <input
+            type="text"
+            id="descricaoGanho"
+            placeholder="Ex: salário, freelance..."
+          >
+        </div>
+
+        <div>
+          <label>Valor</label>
+
+          <input
+            type="number"
+            id="valorGanho"
+            placeholder="Valor recebido"
+          >
+        </div>
+
+        <div>
+          <button onclick="adicionarGanho()">
+            Adicionar
+          </button>
+        </div>
+
+      </div>
+
+    </section>
 
     <!-- FILTROS -->
     <section class="box">
@@ -311,6 +400,17 @@
 
   <script>
 
+    // LOGIN
+    const usuarioAtual =
+    localStorage.getItem("usuarioAtual");
+
+    if(!usuarioAtual){
+
+      window.location.href =
+      "login.html";
+
+    }
+
     // PEGAR TRANSAÇÕES SALVAS
     let transacoes =
     JSON.parse(localStorage.getItem("transacoes")) || [];
@@ -318,7 +418,7 @@
     // FORMATAR DINHEIRO
     function formatar(valor){
 
-      return valor.toLocaleString("pt-BR",{
+      return Number(valor).toLocaleString("pt-BR",{
         style:"currency",
         currency:"BRL"
       });
@@ -335,11 +435,55 @@
 
     }
 
+    // SAIR
+    function sair(){
+
+      localStorage.removeItem("usuarioAtual");
+
+      window.location.href =
+      "login.html";
+
+    }
+
+    // ADICIONAR GANHO
+    function adicionarGanho(){
+
+      const descricao =
+      document.getElementById("descricaoGanho").value;
+
+      const valor =
+      Number(document.getElementById("valorGanho").value);
+
+      if(descricao === "" || valor <= 0){
+        return;
+      }
+
+      transacoes.push({
+        descricao,
+        valor:Number(valor),
+        tipo:"ganho",
+        data:new Date().toISOString()
+      });
+
+      document.getElementById("descricaoGanho").value = "";
+      document.getElementById("valorGanho").value = "";
+
+      salvarDados();
+
+      carregarAnos();
+
+      atualizarTelaGanhos();
+
+    }
+
     // COLOCAR ANOS NO FILTRO
     function carregarAnos(){
 
       const filtroAno =
       document.getElementById("filtroAno");
+
+      filtroAno.innerHTML =
+      '<option value="todos">Todos</option>';
 
       // PEGAR SOMENTE GANHOS
       const ganhos =
@@ -363,6 +507,9 @@
       // REMOVER ANOS REPETIDOS
       const anosUnicos =
       [...new Set(anos)];
+
+      // ORDENAR ANOS
+      anosUnicos.sort((a,b) => b - a);
 
       // ADICIONAR ANOS NO SELECT
       anosUnicos.forEach(ano => {
@@ -432,10 +579,23 @@
 
       });
 
+      // ORDENAR DO MAIS NOVO PARA O MAIS ANTIGO
+      ganhos.sort((a,b) => {
+
+        const dataA =
+        a.data ? new Date(a.data) : new Date();
+
+        const dataB =
+        b.data ? new Date(b.data) : new Date();
+
+        return dataB - dataA;
+
+      });
+
       // SOMAR TOTAL
       const total =
       ganhos.reduce(
-        (soma,item) => soma + item.valor,
+        (soma,item) => soma + Number(item.valor),
         0
       );
 
@@ -484,19 +644,73 @@
               <small>${dataFormatada}</small>
             </span>
 
-            <strong>${formatar(item.valor)}</strong>
+            <strong>
+              + ${formatar(item.valor)}
+            </strong>
 
-            <button
-              class="btnExcluir"
-              onclick="excluirGanho(${indexReal})"
-            >
-              X
-            </button>
+            <div class="acoes">
+
+              <button
+                class="btnEditar"
+                onclick="editarGanho(${indexReal})"
+              >
+                Editar
+              </button>
+
+              <button
+                class="btnExcluir"
+                onclick="excluirGanho(${indexReal})"
+              >
+                X
+              </button>
+
+            </div>
 
           </li>
         `;
 
       });
+
+    }
+
+    // EDITAR GANHO
+    function editarGanho(index){
+
+      const novaDescricao =
+      prompt(
+        "Digite a nova descrição:",
+        transacoes[index].descricao
+      );
+
+      if(novaDescricao === null || novaDescricao === ""){
+        return;
+      }
+
+      const novoValor =
+      prompt(
+        "Digite o novo valor:",
+        transacoes[index].valor
+      );
+
+      if(
+        novoValor === null ||
+        novoValor === "" ||
+        Number(novoValor) <= 0
+      ){
+        return;
+      }
+
+      transacoes[index].descricao =
+      novaDescricao;
+
+      transacoes[index].valor =
+      Number(novoValor);
+
+      salvarDados();
+
+      carregarAnos();
+
+      atualizarTelaGanhos();
 
     }
 
@@ -510,6 +724,8 @@
       salvarDados();
 
       // ATUALIZAR TELA
+      carregarAnos();
+
       atualizarTelaGanhos();
 
     }
