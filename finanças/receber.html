@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>A Receber</title>
+
+  <style>
+
+    /* RESET GERAL */
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial;
+    }
+
+    /* FUNDO DO SITE */
+    body{
+      background:#020617;
+      color:white;
+      display:flex;
+    }
+
+    /* MENU LATERAL */
+    .menu{
+      width:240px;
+      min-height:100vh;
+      background:#0f172a;
+      padding:25px;
+      position:fixed;
+    }
+
+    /* LOGO */
+    .logo{
+      margin-bottom:40px;
+    }
+
+    /* TEXTO DA LOGO */
+    .logo p{
+      color:#94a3b8;
+      margin-top:5px;
+    }
+
+    /* MENU */
+    .menu nav{
+      display:flex;
+      flex-direction:column;
+      gap:15px;
+    }
+
+    /* LINKS MENU */
+    .menu nav a{
+      color:#94a3b8;
+      text-decoration:none;
+      padding:12px;
+      border-radius:10px;
+    }
+
+    /* HOVER MENU */
+    .menu nav a:hover,
+    .menu nav .active{
+      background:#1e293b;
+      color:white;
+    }
+
+    /* BOTÃO SAIR */
+    .logout{
+      margin-top:40px;
+      background:#ef4444;
+    }
+
+    /* CONTEÚDO PRINCIPAL */
+    .container{
+      width:100%;
+      margin-left:240px;
+      padding:30px;
+    }
+
+    /* TOPO */
+    header{
+      margin-bottom:30px;
+    }
+
+    /* TÍTULO */
+    header h1{
+      font-size:32px;
+    }
+
+    /* SUBTÍTULO */
+    header p{
+      color:#94a3b8;
+      margin-top:5px;
+    }
+
+    /* BOX */
+    .box{
+      background:#1e293b;
+      padding:20px;
+      border-radius:18px;
+      margin-bottom:20px;
+    }
+
+    /* GRID */
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+    }
+
+    /* INPUTS */
+    input,
+    button,
+    select{
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:10px;
+      background:#020617;
+      color:white;
+      margin-top:10px;
+      outline:none;
+    }
+
+    /* BOTÕES */
+    button{
+      background:#2563eb;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    /* HOVER BOTÕES */
+    button:hover{
+      opacity:0.9;
+    }
+
+    /* TOTAL */
+    .total{
+      font-size:42px;
+      color:#38bdf8;
+      margin-top:10px;
+    }
+
+    /* CARDS */
+    .cardsReceber{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:20px;
+      margin-top:15px;
+    }
+
+    /* CARD RECEBER */
+    .receberCard{
+      background:#020617;
+      padding:18px;
+      border-radius:16px;
+      border-left:5px solid #38bdf8;
+    }
+
+    /* TÍTULO CARD */
+    .receberCard h3{
+      margin-bottom:10px;
+    }
+
+    /* TEXTO CARD */
+    .receberCard p{
+      color:#cbd5e1;
+      margin-bottom:10px;
+    }
+
+    /* VALOR */
+    .valor{
+      font-size:26px;
+      color:#38bdf8;
+      font-weight:bold;
+      margin-bottom:10px;
+    }
+
+    /* BOTÕES CARD */
+    .botoes{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    /* BOTÃO EXCLUIR */
+    .btnExcluir{
+      background:#ef4444;
+    }
+
+    /* BOTÃO RECEBIDO */
+    .btnRecebido{
+      background:#22c55e;
+    }
+
+    /* BOTÃO EDITAR */
+    .btnEditar{
+      background:#f59e0b;
+    }
+
+    /* STATUS */
+    .status{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:bold;
+      margin-bottom:10px;
+    }
+
+    /* STATUS PENDENTE */
+    .pendente{
+      background:#78350f;
+      color:#facc15;
+    }
+
+    /* STATUS RECEBIDO */
+    .recebido{
+      background:#052e16;
+      color:#22c55e;
+    }
+
+    /* AVISO */
+    .aviso{
+      color:#94a3b8;
+      margin-top:10px;
+    }
+
+    /* RESPONSIVIDADE */
+    @media(max-width:900px){
+
+      body{
+        flex-direction:column;
+      }
+
+      .menu{
+        position:relative;
+        width:100%;
+        min-height:auto;
+      }
+
+      .container{
+        margin-left:0;
+      }
+
+      .grid,
+      .cardsReceber,
+      .botoes{
+        grid-template-columns:1fr;
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- MENU -->
+  <aside class="menu">
+
+    <div class="logo">
+      <h2>💵 Meu Dinheiro</h2>
+      <p>Controle financeiro</p>
+    </div>
+
+    <nav>
+      <a href="index.html">Resumo</a>
+      <a href="ganhos.html">Ganhos</a>
+      <a href="gastos.html">Gastos</a>
+      <a href="fixos.html">Fixos</a>
+      <a href="cofrinhos.html">Cofrinhos</a>
+      <a href="metas.html">Metas</a>
+      <a href="receber.html" class="active">A Receber</a>
+    </nav>
+
+    <button class="logout" onclick="sair()">
+      Sair
+    </button>
+
+  </aside>
+
+  <!-- CONTEÚDO -->
+  <main class="container">
+
+    <header>
+      <h1>A Receber</h1>
+      <p>Controle valores que outras pessoas ainda vão te pagar</p>
+    </header>
+
+    <!-- CADASTRO -->
+    <section class="box">
+
+      <h2>Adicionar valor a receber</h2>
+
+      <div class="grid">
+
+        <input
+          type="text"
+          id="pessoaReceber"
+          placeholder="Nome da pessoa"
+        >
+
+        <input
+          type="text"
+          id="descricaoReceber"
+          placeholder="Descrição"
+        >
+
+        <input
+          type="number"
+          id="valorReceber"
+          placeholder="Valor"
+        >
+
+      <!--   <input
+          type="date"
+          id="dataReceber"
+        > -->
+
+      </div>
+
+      <button onclick="adicionarReceber()">
+        Adicionar
+      </button>
+
+    </section>
+
+    <!-- TOTAL -->
+    <section class="box">
+
+      <h2>Total pendente a receber</h2>
+
+      <h1 class="total" id="totalReceber">
+        R$ 0,00
+      </h1>
+
+    </section>
+
+    <!-- FILTROS -->
+    <section class="box">
+
+      <h2>Filtrar</h2>
+
+      <div class="grid">
+
+        <input
+          type="text"
+          id="pesquisaReceber"
+          placeholder="Pesquisar por pessoa ou descrição"
+          oninput="atualizarTelaReceber()"
+        >
+
+        <select
+          id="filtroStatus"
+          onchange="atualizarTelaReceber()"
+        >
+          <option value="todos">Todos</option>
+          <option value="pendente">Pendentes</option>
+          <option value="recebido">Recebidos</option>
+        </select>
+
+      </div>
+
+    </section>
+
+    <!-- LISTA -->
+    <section class="box">
+
+      <h2>Lista de valores</h2>
+
+      <div
+        id="listaReceber"
+        class="cardsReceber"
+      ></div>
+
+    </section>
+
+  </main>
+
+  <script>
+
+    // LOGIN
+    const usuarioAtual =
+    localStorage.getItem("usuarioAtual");
+
+    if(!usuarioAtual){
+
+      window.location.href =
+      "login.html";
+
+    }
+
+    // PEGAR DADOS SALVOS
+    let receber =
+    JSON.parse(localStorage.getItem("receber")) || [];
+
+    let transacoes =
+    JSON.parse(localStorage.getItem("transacoes")) || [];
+
+    let saldo =
+    Number(localStorage.getItem("saldo")) || 0;
+
+    // FORMATAR DINHEIRO
+    function formatar(valor){
+
+      return Number(valor).toLocaleString("pt-BR",{
+        style:"currency",
+        currency:"BRL"
+      });
+
+    }
+
+    // SALVAR DADOS
+    function salvarDados(){
+
+      localStorage.setItem(
+        "receber",
+        JSON.stringify(receber)
+      );
+
+      localStorage.setItem(
+        "transacoes",
+        JSON.stringify(transacoes)
+      );
+
+      localStorage.setItem("saldo", saldo);
+
+    }
+
+    // SAIR
+    function sair(){
+
+      localStorage.removeItem("usuarioAtual");
+
+      window.location.href =
+      "login.html";
+
+    }
+
+    // ADICIONAR A RECEBER
+    function adicionarReceber(){
+
+      const pessoa =
+      document.getElementById("pessoaReceber").value;
+
+      const descricao =
+      document.getElementById("descricaoReceber").value;
+
+      const valor =
+      Number(document.getElementById("valorReceber").value);
+
+      const dataPrevista =
+      document.getElementById("dataReceber").value;
+
+      if(pessoa === "" || descricao === "" || valor <= 0){
+        return;
+      }
+
+      receber.push({
+        pessoa,
+        descricao,
+        valor:Number(valor),
+        dataPrevista,
+        status:"pendente",
+        dataCadastro:new Date().toISOString()
+      });
+
+      document.getElementById("pessoaReceber").value = "";
+      document.getElementById("descricaoReceber").value = "";
+      document.getElementById("valorReceber").value = "";
+      document.getElementById("dataReceber").value = "";
+
+      salvarDados();
+
+      atualizarTelaReceber();
+
+    }
+
+    // MARCAR COMO RECEBIDO
+    function marcarRecebido(index){
+
+      if(receber[index].status === "recebido"){
+        return;
+      }
+
+      receber[index].status = "recebido";
+      receber[index].dataRecebimento = new Date().toISOString();
+
+      saldo += Number(receber[index].valor);
+
+      transacoes.push({
+        descricao:`Recebido de ${receber[index].pessoa} - ${receber[index].descricao}`,
+        valor:Number(receber[index].valor),
+        tipo:"ganho",
+        origem:"receber",
+        data:new Date().toISOString()
+      });
+
+      salvarDados();
+
+      atualizarTelaReceber();
+
+    }
+
+    // EDITAR A RECEBER
+    function editarReceber(index){
+
+      const novoValor =
+      prompt("Digite o novo valor:", receber[index].valor);
+
+      if(
+        novoValor === null ||
+        novoValor === "" ||
+        Number(novoValor) <= 0
+      ){
+        return;
+      }
+
+      receber[index].valor =
+      Number(novoValor);
+
+      salvarDados();
+
+      atualizarTelaReceber();
+
+    }
+
+    // EXCLUIR A RECEBER
+    function excluirReceber(index){
+
+      receber.splice(index,1);
+
+      salvarDados();
+
+      atualizarTelaReceber();
+
+    }
+
+    // ATUALIZAR TELA
+    function atualizarTelaReceber(){
+
+      const pesquisa =
+      document.getElementById("pesquisaReceber")
+      .value
+      .toLowerCase();
+
+      const filtroStatus =
+      document.getElementById("filtroStatus").value;
+
+      // FILTRAR VALORES
+      const receberFiltrado =
+      receber.filter(item => {
+
+        const batePesquisa =
+        item.pessoa.toLowerCase().includes(pesquisa) ||
+        item.descricao.toLowerCase().includes(pesquisa);
+
+        const bateStatus =
+        filtroStatus === "todos" ||
+        item.status === filtroStatus;
+
+        return batePesquisa && bateStatus;
+
+      });
+
+      // SOMAR TOTAL PENDENTE
+      const totalPendente =
+      receber
+      .filter(item => item.status === "pendente")
+      .reduce((soma,item) => soma + Number(item.valor),0);
+
+      document.getElementById("totalReceber")
+      .textContent = formatar(totalPendente);
+
+      const lista =
+      document.getElementById("listaReceber");
+
+      lista.innerHTML = "";
+
+      if(receberFiltrado.length === 0){
+
+        lista.innerHTML =
+        "<p class='aviso'>Nenhum valor encontrado.</p>";
+
+        return;
+
+      }
+
+      // MOSTRAR VALORES
+      receberFiltrado.forEach(item => {
+
+        const indexReal =
+        receber.indexOf(item);
+
+        const dataPrevista =
+        item.dataPrevista
+        ? new Date(item.dataPrevista + "T00:00:00").toLocaleDateString("pt-BR")
+        : "Sem data";
+
+        const statusClasse =
+        item.status === "recebido" ? "recebido" : "pendente";
+
+        const statusTexto =
+        item.status === "recebido" ? "Recebido" : "Pendente";
+
+        lista.innerHTML += `
+          <div class="receberCard">
+
+            <span class="status ${statusClasse}">
+              ${statusTexto}
+            </span>
+
+            <h3>👤 ${item.pessoa}</h3>
+
+            <p>${item.descricao}</p>
+
+            <div class="valor">
+              ${formatar(item.valor)}
+            </div>
+
+            <p>
+              Data prevista:
+              ${dataPrevista}
+            </p>
+
+            <div class="botoes">
+
+              ${
+                item.status === "pendente"
+                ? `
+                  <button
+                    class="btnRecebido"
+                    onclick="marcarRecebido(${indexReal})"
+                  >
+                    Recebido
+                  </button>
+                `
+                : ""
+              }
+
+              <button
+                class="btnEditar"
+                onclick="editarReceber(${indexReal})"
+              >
+                Editar
+              </button>
+
+              <button
+                class="btnExcluir"
+                onclick="excluirReceber(${indexReal})"
+              >
+                Excluir
+              </button>
+
+            </div>
+
+          </div>
+        `;
+
+      });
+
+    }
+
+    // INICIAR
+    atualizarTelaReceber();
+
+  </script>
+
+</body>
+</html>
