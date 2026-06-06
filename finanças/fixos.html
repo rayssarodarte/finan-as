@@ -95,8 +95,23 @@
       margin-bottom:20px;
     }
 
+    /* GRID FORM */
+    .form-grid{
+      display:grid;
+      grid-template-columns:2fr 1fr 1fr;
+      gap:15px;
+    }
+
+    /* FILTROS */
+    .filtros{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+    }
+
     /* INPUTS */
     input,
+    select,
     button{
       width:100%;
       padding:12px;
@@ -145,12 +160,33 @@
       gap:15px;
     }
 
-    /* BOTÃO EXCLUIR */
-    .btnExcluir{
+    /* AÇÕES */
+    .acoes{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    /* BOTÃO PEQUENO */
+    .btnPequeno{
       width:auto;
       padding:6px 10px;
-      background:#ef4444;
       margin-top:0;
+    }
+
+    /* BOTÃO EXCLUIR */
+    .btnExcluir{
+      background:#ef4444;
+    }
+
+    /* BOTÃO EDITAR */
+    .btnEditar{
+      background:#f59e0b;
+    }
+
+    /* BOTÃO PAGO */
+    .btnPago{
+      background:#22c55e;
     }
 
     /* AVISO */
@@ -176,6 +212,24 @@
         margin-left:0;
       }
 
+      .form-grid,
+      .filtros{
+        grid-template-columns:1fr;
+      }
+
+      li{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .acoes{
+        width:100%;
+      }
+
+      .acoes button{
+        flex:1;
+      }
+
     }
   </style>
 </head>
@@ -197,7 +251,12 @@
       <a href="fixos.html" class="active">Fixos</a>
       <a href="cofrinhos.html">Cofrinhos</a>
       <a href="metas.html">Metas</a>
+       <a href="receber.html">A receber</a>
     </nav>
+    
+    <button class="logout" onclick="sair()">
+      Sair
+    </button>
 
   </aside>
 
@@ -206,15 +265,43 @@
 
     <header>
       <h1>Gastos Fixos</h1>
-      <p>Adicione, acompanhe e remova seus gastos mensais fixos</p>
+      <p>Cadastre seus gastos mensais e marque quando forem pagos</p>
     </header>
 
-  
+    <!-- CADASTRO -->
+    <section class="box">
+
+      <h2>Adicionar gasto fixo</h2>
+
+      <div class="form-grid">
+
+        <div>
+          <label>Nome</label>
+          <input type="text" id="nomeFixo" placeholder="Ex: internet">
+        </div>
+
+        <div>
+          <label>Valor</label>
+          <input type="number" id="valorFixo" placeholder="Valor">
+        </div>
+
+        <div>
+          <label>Vencimento</label>
+          <input type="number" id="vencimentoFixo" placeholder="Dia" min="1" max="31">
+        </div>
+
+      </div>
+
+      <button onclick="adicionarFixo()">
+        Adicionar fixo
+      </button>
+
+    </section>
 
     <!-- TOTAL -->
     <section class="box">
 
-      <h2>Total de gastos fixos</h2>
+      <h2>Total de gastos fixos cadastrados</h2>
 
       <h1 class="total" id="totalFixos">
         R$ 0,00
@@ -222,26 +309,53 @@
 
     </section>
 
-    <!-- PESQUISA -->
+    <!-- LISTA DE FIXOS -->
     <section class="box">
 
-      <h2>Pesquisar fixo</h2>
+      <h2>Fixos cadastrados</h2>
+      <p class="aviso">Aqui ficam as contas recorrentes. Elas só entram nos gastos quando você clicar em pagar.</p>
 
-      <input
-        type="text"
-        id="pesquisaFixo"
-        placeholder="Ex: internet..."
-        oninput="atualizarTelaFixos()"
-      >
+      <ul id="listaFixos"></ul>
 
     </section>
 
-    <!-- LISTA -->
+    <!-- FILTROS PAGAMENTOS -->
     <section class="box">
 
-      <h2>Lista de gastos fixos</h2>
+      <h2>Pagamentos de fixos</h2>
+      <p class="aviso">Use o filtro abaixo para ver quais fixos foram pagos em cada mês.</p>
 
-      <ul id="listaFixos"></ul>
+      <div class="filtros">
+
+        <div>
+          <label>Mês</label>
+          <select id="filtroMes" onchange="atualizarTelaFixos()">
+            <option value="todos">Todos</option>
+            <option value="0">Janeiro</option>
+            <option value="1">Fevereiro</option>
+            <option value="2">Março</option>
+            <option value="3">Abril</option>
+            <option value="4">Maio</option>
+            <option value="5">Junho</option>
+            <option value="6">Julho</option>
+            <option value="7">Agosto</option>
+            <option value="8">Setembro</option>
+            <option value="9">Outubro</option>
+            <option value="10">Novembro</option>
+            <option value="11">Dezembro</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Ano</label>
+          <select id="filtroAno" onchange="atualizarTelaFixos()">
+            <option value="todos">Todos</option>
+          </select>
+        </div>
+
+      </div>
+
+      <ul id="listaPagamentosFixos"></ul>
 
     </section>
 
@@ -252,6 +366,10 @@
     // PEGAR FIXOS SALVOS
     let fixos =
     JSON.parse(localStorage.getItem("fixos")) || [];
+
+    // PEGAR TRANSAÇÕES SALVAS
+    let transacoes =
+    JSON.parse(localStorage.getItem("transacoes")) || [];
 
     // FORMATAR DINHEIRO
     function formatar(valor){
@@ -271,6 +389,25 @@
         JSON.stringify(fixos)
       );
 
+      localStorage.setItem(
+        "transacoes",
+        JSON.stringify(transacoes)
+      );
+
+    }
+
+    // NORMALIZAR FIXOS ANTIGOS
+    function normalizarFixos(){
+
+      fixos = fixos.map(item => ({
+        nome:item.nome,
+        valor:Number(item.valor),
+        vencimento:item.vencimento || "",
+        pago:item.pago || false
+      }));
+
+      salvarDados();
+
     }
 
     // ADICIONAR FIXO
@@ -282,17 +419,23 @@
       const valor =
       Number(document.getElementById("valorFixo").value);
 
+      const vencimento =
+      document.getElementById("vencimentoFixo").value;
+
       if(nome === "" || valor <= 0){
         return;
       }
 
       fixos.push({
         nome,
-        valor:Number(valor)
+        valor:Number(valor),
+        vencimento,
+        pago:false
       });
 
       document.getElementById("nomeFixo").value = "";
       document.getElementById("valorFixo").value = "";
+      document.getElementById("vencimentoFixo").value = "";
 
       salvarDados();
 
@@ -300,79 +443,243 @@
 
     }
 
-    // ATUALIZAR TELA
-    function atualizarTelaFixos(){
+    // PAGAR FIXO
+    function pagarFixo(index){
 
-      const pesquisa =
-      document.getElementById("pesquisaFixo")
-      .value
-      .toLowerCase();
+      const fixo =
+      fixos[index];
 
-      // FILTRAR FIXOS
-      const fixosFiltrados =
-      fixos.filter(item => {
+      transacoes.push({
+        descricao:`Fixo pago: ${fixo.nome}`,
+        valor:Number(fixo.valor),
+        tipo:"gasto",
+        origem:"fixo",
+        data:new Date().toISOString()
+      });
 
-        return item.nome
-        .toLowerCase()
-        .includes(pesquisa);
+      fixos[index].pago = true;
+
+      salvarDados();
+
+      atualizarTelaFixos();
+
+    }
+
+    // EDITAR FIXO
+    function editarFixo(index){
+
+      const novoNome =
+      prompt("Digite o novo nome:", fixos[index].nome);
+
+      if(novoNome === null || novoNome === ""){
+        return;
+      }
+
+      const novoValor =
+      prompt("Digite o novo valor:", fixos[index].valor);
+
+      if(novoValor === null || novoValor === "" || Number(novoValor) <= 0){
+        return;
+      }
+
+      const novoVencimento =
+      prompt("Digite o dia de vencimento:", fixos[index].vencimento || "");
+
+      fixos[index].nome = novoNome;
+      fixos[index].valor = Number(novoValor);
+      fixos[index].vencimento = novoVencimento;
+
+      salvarDados();
+
+      atualizarTelaFixos();
+
+    }
+
+    // EXCLUIR FIXO
+    function excluirFixo(index){
+
+      fixos.splice(index,1);
+
+      salvarDados();
+
+      atualizarTelaFixos();
+
+    }
+
+    // COLOCAR ANOS NO FILTRO
+    function carregarAnos(){
+
+      const filtroAno =
+      document.getElementById("filtroAno");
+
+      filtroAno.innerHTML =
+      `<option value="todos">Todos</option>`;
+
+      const pagamentosFixos =
+      transacoes.filter(item => item.origem === "fixo");
+
+      const anos =
+      pagamentosFixos.map(item => {
+        return new Date(item.data).getFullYear();
+      });
+
+      const anosUnicos =
+      [...new Set(anos)];
+
+      anosUnicos.forEach(ano => {
+
+        filtroAno.innerHTML += `
+          <option value="${ano}">
+            ${ano}
+          </option>
+        `;
 
       });
 
-      // SOMAR TOTAL
+    }
+
+    // ATUALIZAR TELA
+    function atualizarTelaFixos(){
+
+      // SOMAR TOTAL DOS FIXOS CADASTRADOS
       const total =
       fixos.reduce(
         (soma,item) => soma + Number(item.valor),
         0
       );
 
-      // MOSTRAR TOTAL
       document.getElementById("totalFixos")
       .textContent = formatar(total);
 
-      // PEGAR LISTA
-      const lista =
+      // MOSTRAR FIXOS CADASTRADOS
+      const listaFixos =
       document.getElementById("listaFixos");
 
-      // LIMPAR LISTA
-      lista.innerHTML = "";
+      listaFixos.innerHTML = "";
 
-      // VERIFICAR SE EXISTE FIXO
-      if(fixosFiltrados.length === 0){
+      if(fixos.length === 0){
 
-        lista.innerHTML =
-        "<p class='aviso'>Nenhum gasto fixo encontrado.</p>";
+        listaFixos.innerHTML =
+        "<p class='aviso'>Nenhum gasto fixo cadastrado.</p>";
+
+      }else{
+
+        fixos.forEach((item,index) => {
+
+          listaFixos.innerHTML += `
+            <li>
+
+              <span>
+                🟣 ${item.nome}
+                <br>
+                <small>
+                  ${formatar(item.valor)}
+                  ${item.vencimento ? ` • vence dia ${item.vencimento}` : ""}
+                  ${item.pago ? " • pago" : " • pendente"}
+                </small>
+              </span>
+
+              <div class="acoes">
+
+                <button
+                  class="btnPequeno btnPago"
+                  onclick="pagarFixo(${index})"
+                >
+                  Pagar
+                </button>
+
+                <button
+                  class="btnPequeno btnEditar"
+                  onclick="editarFixo(${index})"
+                >
+                  Editar
+                </button>
+
+                <button
+                  class="btnPequeno btnExcluir"
+                  onclick="excluirFixo(${index})"
+                >
+                  X
+                </button>
+
+              </div>
+
+            </li>
+          `;
+
+        });
+
+      }
+
+      // PEGAR FILTROS DO HISTÓRICO
+      const mesSelecionado =
+      document.getElementById("filtroMes").value;
+
+      const anoSelecionado =
+      document.getElementById("filtroAno").value;
+
+      // PEGAR PAGAMENTOS DE FIXOS
+      let pagamentos =
+      transacoes.filter(item => item.origem === "fixo");
+
+      pagamentos = pagamentos.filter(item => {
+
+        const data =
+        new Date(item.data);
+
+        const mes =
+        data.getMonth();
+
+        const ano =
+        data.getFullYear();
+
+        const bateMes =
+        mesSelecionado === "todos" ||
+        Number(mesSelecionado) === mes;
+
+        const bateAno =
+        anoSelecionado === "todos" ||
+        Number(anoSelecionado) === ano;
+
+        return bateMes && bateAno;
+
+      });
+
+      // MOSTRAR PAGAMENTOS DE FIXOS
+      const listaPagamentos =
+      document.getElementById("listaPagamentosFixos");
+
+      listaPagamentos.innerHTML = "";
+
+      if(pagamentos.length === 0){
+
+        listaPagamentos.innerHTML =
+        "<p class='aviso'>Nenhum fixo pago nesse filtro.</p>";
 
         return;
 
       }
 
-      // MOSTRAR FIXOS
-      fixosFiltrados.forEach(item => {
+      pagamentos.forEach(item => {
 
-        // PEGAR INDEX REAL
-        const indexReal =
-        fixos.indexOf(item);
+        const data =
+        new Date(item.data);
 
-        // ADICIONAR ITEM NA LISTA
-        lista.innerHTML += `
+        const dataFormatada =
+        data.toLocaleDateString("pt-BR");
+
+        listaPagamentos.innerHTML += `
           <li>
 
             <span>
-              🟣 ${item.nome}
+              ✅ ${item.descricao}
               <br>
-              <small>Gasto mensal fixo</small>
+              <small>Pago em ${dataFormatada}</small>
             </span>
 
-            <strong style="color:#a855f7;">
+            <strong style="color:#ef4444;">
               ${formatar(item.valor)}
             </strong>
-
-            <button
-              class="btnExcluir"
-              onclick="excluirFixo(${indexReal})"
-            >
-              X
-            </button>
 
           </li>
         `;
@@ -381,21 +688,9 @@
 
     }
 
-    // EXCLUIR FIXO
-    function excluirFixo(index){
-
-      // REMOVER FIXO
-      fixos.splice(index,1);
-
-      // SALVAR DADOS
-      salvarDados();
-
-      // ATUALIZAR TELA
-      atualizarTelaFixos();
-
-    }
-
     // INICIAR
+    normalizarFixos();
+    carregarAnos();
     atualizarTelaFixos();
 
   </script>
