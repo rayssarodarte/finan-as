@@ -65,6 +65,12 @@
       color:white;
     }
 
+    /* BOTÃO SAIR */
+    .logout{
+      margin-top:40px;
+      background:#ef4444;
+    }
+
     /* CONTEÚDO PRINCIPAL */
     .container{
       width:100%;
@@ -101,6 +107,14 @@
       display:grid;
       grid-template-columns:1fr 1fr 1fr;
       gap:15px;
+    }
+
+    /* FORMULÁRIO */
+    .formulario{
+      display:grid;
+      grid-template-columns:2fr 1fr 1fr;
+      gap:15px;
+      align-items:end;
     }
 
     /* INPUTS */
@@ -148,10 +162,29 @@
       padding:14px;
       border-radius:10px;
       margin-bottom:10px;
-      display:flex;
-      justify-content:space-between;
+      display:grid;
+      grid-template-columns:1fr auto auto;
       align-items:center;
       gap:15px;
+    }
+
+    /* VALOR DO GASTO */
+    .valorGasto{
+      color:#ef4444;
+    }
+
+    /* ÁREA DOS BOTÕES */
+    .acoes{
+      display:flex;
+      gap:8px;
+    }
+
+    /* BOTÃO EDITAR */
+    .btnEditar{
+      width:auto;
+      padding:6px 10px;
+      background:#2563eb;
+      margin-top:0;
     }
 
     /* BOTÃO EXCLUIR */
@@ -185,8 +218,21 @@
         margin-left:0;
       }
 
-      .filtros{
+      .filtros,
+      .formulario{
         grid-template-columns:1fr;
+      }
+
+      li{
+        grid-template-columns:1fr;
+      }
+
+      .acoes{
+        width:100%;
+      }
+
+      .acoes button{
+        width:100%;
       }
 
     }
@@ -208,10 +254,15 @@
       <a href="index.html">Resumo</a>
       <a href="ganhos.html">Ganhos</a>
       <a href="gastos.html" class="active">Gastos</a>
-       <a href="fixos.html">Fixos</a>
+      <a href="fixos.html">Fixos</a>
       <a href="cofrinhos.html">Cofrinhos</a>
       <a href="metas.html">Metas</a>
+       <a href="receber.html">A receber</a>
     </nav>
+
+    <button class="logout" onclick="sair()">
+      Sair
+    </button>
 
   </aside>
 
@@ -222,6 +273,43 @@
       <h1>Gastos</h1>
       <p>Veja seus gastos separados por mês e ano</p>
     </header>
+
+    <!-- ADICIONAR GASTO -->
+    <section class="box">
+
+      <h2>Adicionar gasto</h2>
+
+      <div class="formulario">
+
+        <div>
+          <label>Descrição</label>
+
+          <input
+            type="text"
+            id="descricaoGasto"
+            placeholder="Ex: mercado, faculdade..."
+          >
+        </div>
+
+        <div>
+          <label>Valor</label>
+
+          <input
+            type="number"
+            id="valorGasto"
+            placeholder="Valor"
+          >
+        </div>
+
+        <div>
+          <button onclick="adicionarGasto()">
+            Adicionar
+          </button>
+        </div>
+
+      </div>
+
+    </section>
 
     <!-- FILTROS -->
     <section class="box">
@@ -312,6 +400,16 @@
 
   <script>
 
+  // LOGIN
+  const usuarioAtual =
+  localStorage.getItem("usuarioAtual");
+
+  if(!usuarioAtual){
+
+    window.location.href =
+    "login.html";
+
+  }
 
   // PEGAR TRANSAÇÕES SALVAS
   let transacoes =
@@ -337,11 +435,113 @@
 
   }
 
+  // SAIR
+  function sair(){
+
+    localStorage.removeItem("usuarioAtual");
+
+    window.location.href =
+    "login.html";
+
+  }
+
+  // ADICIONAR GASTO
+  function adicionarGasto(){
+
+    const descricao =
+    document.getElementById("descricaoGasto").value;
+
+    const valor =
+    Number(document.getElementById("valorGasto").value);
+
+    if(descricao === "" || valor <= 0){
+      return;
+    }
+
+    transacoes.push({
+      descricao,
+      valor:Number(valor),
+      tipo:"gasto",
+      data:new Date().toISOString()
+    });
+
+    document.getElementById("descricaoGasto").value = "";
+    document.getElementById("valorGasto").value = "";
+
+    salvarDados();
+
+    carregarAnos();
+
+    atualizarTelaGastos();
+
+  }
+
+  // EDITAR GASTO
+  function editarGasto(index){
+
+    const gasto =
+    transacoes[index];
+
+    const novaDescricao =
+    prompt(
+      "Digite a nova descrição:",
+      gasto.descricao
+    );
+
+    if(novaDescricao === null || novaDescricao === ""){
+      return;
+    }
+
+    const novoValor =
+    prompt(
+      "Digite o novo valor:",
+      gasto.valor
+    );
+
+    if(
+      novoValor === null ||
+      novoValor === "" ||
+      Number(novoValor) <= 0
+    ){
+      return;
+    }
+
+    transacoes[index].descricao =
+    novaDescricao;
+
+    transacoes[index].valor =
+    Number(novoValor);
+
+    salvarDados();
+
+    atualizarTelaGastos();
+
+  }
+
+  // EXCLUIR GASTO
+  function excluirGasto(index){
+
+    transacoes.splice(index,1);
+
+    salvarDados();
+
+    carregarAnos();
+
+    atualizarTelaGastos();
+
+  }
+
   // COLOCAR ANOS NO FILTRO
   function carregarAnos(){
 
     const filtroAno =
     document.getElementById("filtroAno");
+
+    const anoAtualSelecionado =
+    filtroAno.value;
+
+    filtroAno.innerHTML =
+    `<option value="todos">Todos</option>`;
 
     const gastos =
     transacoes.filter(item => item.tipo === "gasto");
@@ -358,7 +558,7 @@
     });
 
     const anosUnicos =
-    [...new Set(anos)];
+    [...new Set(anos)].sort((a,b) => b - a);
 
     anosUnicos.forEach(ano => {
 
@@ -369,6 +569,16 @@
       `;
 
     });
+
+    if(
+      [...filtroAno.options]
+      .some(option => option.value === anoAtualSelecionado)
+    ){
+
+      filtroAno.value =
+      anoAtualSelecionado;
+
+    }
 
   }
 
@@ -465,32 +675,32 @@
             <small>${dataFormatada}</small>
           </span>
 
-          <strong style="color:#ef4444;">
-            ${formatar(item.valor)}
+          <strong class="valorGasto">
+            - ${formatar(item.valor)}
           </strong>
 
-          <button
-            class="btnExcluir"
-            onclick="excluirGasto(${indexReal})"
-          >
-            X
-          </button>
+          <div class="acoes">
+
+            <button
+              class="btnEditar"
+              onclick="editarGasto(${indexReal})"
+            >
+              Editar
+            </button>
+
+            <button
+              class="btnExcluir"
+              onclick="excluirGasto(${indexReal})"
+            >
+              X
+            </button>
+
+          </div>
 
         </li>
       `;
 
     });
-
-  }
-
-  // EXCLUIR GASTO
-  function excluirGasto(index){
-
-    transacoes.splice(index,1);
-
-    salvarDados();
-
-    atualizarTelaGastos();
 
   }
 
@@ -500,3 +710,6 @@
   atualizarTelaGastos();
 
 </script>
+
+</body>
+</html>
